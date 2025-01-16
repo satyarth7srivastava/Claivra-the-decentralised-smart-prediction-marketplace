@@ -19,9 +19,24 @@ const LoginPage: React.FC = () => {
       style={{ backgroundImage: "url(/bg.jpg)" }}
     >
       <div className="absolute inset-0 bg-black opacity-30"></div>
-      <div className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-center text-2xl font-bold mt-4">Login</h2>
-        <p className="text-center text-gray-500 mt-2">Step 1 of 2</p>
+      <div className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-center text-2xl text-gray-800 font-semibold mt-4">Login</h2>
+        <button
+            className="w-full flex items-center justify-center py-2 bg-blue-500 my-4 text-gray-800 rounded-lg hover:bg-blue-600 transition duration-200"
+          >
+            <div className="bg-white p-2 rounded-md">
+            <img
+              src="/google.png"
+              alt="Google"
+              className="w-6 h-6 "
+            />
+            </div >
+            <div className="flex flex-col justify-start ml-4">
+            <p className="text-sm font-bold text-gray-50">Continue with Google</p>
+            <p className="text-start text-xs font-normal text-gray-200">Quick sign-in</p>
+            </div>
+          </button>
+                
 
         <div className="mt-6">
           <form onSubmit={handleSubmit}>
@@ -52,13 +67,13 @@ const LoginPage: React.FC = () => {
             )}
             <button
               type="submit"
-              className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+              className="w-full py-2 bg-gray-500 text-white rounded-lg hover:bg-blue-700 transition duration-200"
             >
               Continue
             </button>
           </form>
 
-          <div className="text-center my-4 text-gray-500 font-medium">
+          <div className="text-center my-2 text-gray-400 font-medium text-sm">
             — else login directly with —
           </div>
 
@@ -77,7 +92,7 @@ const LoginPage: React.FC = () => {
         <div className="text-center mt-6">
           <p>
             Don't have an account?{" "}
-            <a href="/signup" className="text-blue-600 hover:underline">
+            <a href="/signup" className="text-blue-600 hover:text-blue-800">
               Sign up
             </a>
           </p>
