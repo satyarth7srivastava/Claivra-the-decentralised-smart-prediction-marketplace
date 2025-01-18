@@ -146,4 +146,14 @@ contract MarketPlaceContract {
         Buyer memory newBuyer = Buyer(buyerMap[msg.sender].tickets.length + 1, msg.sender, new uint256[](0), 0);
         buyerMap[msg.sender] = newBuyer;
     }
+
+    function login(address _walletAdd, bool isBuyer) public view returns (address) {
+        if (sellerMap[_walletAdd].id > 0 && isBuyer == false) {
+            return _walletAdd;
+        } else if (buyerMap[_walletAdd].id > 0 && isBuyer == true) {
+            return _walletAdd;
+        } else {
+            return address(0);
+        }
+    }
 }
