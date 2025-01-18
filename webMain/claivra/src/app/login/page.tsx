@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {getContract, connectMetamask} from "@/app/bc-utils/utils"
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -11,6 +13,11 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     router.push("/verify-login");
+  };
+
+  const handleMetaMaskLogin = async () => {
+    const contract = getContract();
+    connectMetamask(contract, true);
   };
 
   return (
@@ -78,6 +85,7 @@ const LoginPage: React.FC = () => {
           </div>
 
           <button
+            onClick={handleMetaMaskLogin}
             className="w-full flex items-center justify-center py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200"
           >
             <img

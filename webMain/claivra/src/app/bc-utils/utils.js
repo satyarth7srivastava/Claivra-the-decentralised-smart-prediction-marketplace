@@ -1,0 +1,47 @@
+import { Contract } from "ethers";
+import { ethers } from "ethers";
+
+import { abi } from "../../../../../blockchain/ignition/deployments/chain-31337/artifacts/MPC#MarketPlaceContract.json";
+import { AddressLike } from "ethers";
+
+
+const contractAdress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
+const myContract = null;
+
+const initializeContract = async () => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner(0);
+    const contract = new ethers.Contract(
+        contractAdress,
+        abi,
+        signer
+    );
+
+    myContract = contract;
+    
+    return contract;
+}
+
+const connectMetamask = async (_contract, isBuyer) => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner(0);
+    const contract = _contract.connect(signer);
+    const addressBuyer = await signer.getAddress();
+    const adr = contract.login(addressBuyer, isBuyer);
+    return (adr === addressBuyer);
+}
+
+const getContract = async () => {
+    if(myContract === null) {
+        return await initializeContract();
+    }
+    return myContract;
+}
+
+const registerAsBuyer = async (_contract) => {
+    const res = _contract.registerAsBuyer();
+    console.log(res);
+}
+
+export { connectMetamask, getContract, registerAsBuyer };
