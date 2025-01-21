@@ -10,6 +10,7 @@ contract MarketPlaceContract {
         address owner;
         uint256 amt;
         uint256 quizId;
+        uint256 betIndex;
     }
     //map list for tickets
     mapping(uint256 => Ticket) public ticketMap;
@@ -19,6 +20,7 @@ contract MarketPlaceContract {
         uint256 minAmt;
         uint256 maxAmt;
         uint256 totalAmt;
+        uint256[] options;
         uint256[] tickets;
         bool isEnded;
     }
@@ -70,51 +72,57 @@ contract MarketPlaceContract {
     //Functions
 
     //For Seller
-    function createQuiz(uint256 _minAmt, uint256 _maxAmt, uint256 _id) public onlySeller {
+    function createQuiz(uint256 _minAmt, uint256 _maxAmt, uint256 _id, uint256 _numOfoptions) public onlySeller {
         require(_minAmt > 0, "Minimum amount should be greater than 0");
         require(_maxAmt > _minAmt, "Maximum amount should be greater than minimum amount");
-        Quiz memory newQuiz = Quiz(_id, msg.sender, _minAmt, _maxAmt, 0, new uint256[](0), false);
+        Quiz memory newQuiz = Quiz(_id, msg.sender, _minAmt, _maxAmt, 0, new uint256[](_numOfoptions + 1), new uint256[](0), false);
+
         quizMap[_id] = newQuiz;
         sellerMap[msg.sender].quizzes.push(_id);
         emit QuizCreated(_id, msg.sender, _minAmt, _maxAmt);
     }
-    function endQuiz(uint256 _QuizId) public onlySeller {
+    function endQuiz(uint256 _QuizId, uint256 _WinningInd) public onlySeller {
         require(quizMap[_QuizId].owner == msg.sender, "Only owner can end the quiz");
         require(quizMap[_QuizId].isEnded == false, "Quiz is already ended");
         quizMap[_QuizId].isEnded = true;
 
-        transferRewardsToWinner(_QuizId);
+        transferRewardsToWinner(_QuizId, _WinningInd);
         
         emit QuizEnded(_QuizId, msg.sender, quizMap[_QuizId].totalAmt);
     }
 
     //Contract's core functions
-    function generateReward(uint256 _TicketId, uint256 _percent) private view returns (uint256){
-        uint256 reward = (ticketMap[_TicketId].amt * _percent) / 100;
+    function generateReward(uint256 _TicketId, uint256 _TotalAmt, uint256 correctOptionBet) private view returns (uint256){
+        uint256 reward = (ticketMap[_TicketId].amt / correctOptionBet) * _TotalAmt;
         return reward;
     }
-    function transferRewardsToWinner(uint256 _QuizId) public payable{
+    function transferRewardsToWinner(uint256 _QuizId, uint256 _WinningInd) public payable{
         require(quizMap[_QuizId].isEnded == true, "Quiz is not ended yet");
         require(quizMap[_QuizId].owner == msg.sender, "Only owner can transfer rewards");
         uint256 totalTickets = quizMap[_QuizId].tickets.length;
-        uint256 rewardPercent = 100 / totalTickets;
+        uint256 totalAmount = quizMap[_QuizId].totalAmt;
+        uint256 fee = totalAmount * 5 / 100;
+        totalAmount -= fee;
+        payable(admin).transfer(fee);
         for (uint256 i = 0; i < totalTickets; i++) {
-            uint256 reward = generateReward(quizMap[_QuizId].tickets[i], rewardPercent);
-            payable(ticketMap[quizMap[_QuizId].tickets[i]].owner).transfer(reward);
-            //removing the used ticket from buyer's list and updating the total amount
-            for (uint256 j = 0; j < buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets.length; j++) {
-                if (buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[j] == quizMap[_QuizId].tickets[i]) {
-                    buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].totalAmt -= ticketMap[quizMap[_QuizId].tickets[i]].amt;
-                    delete buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[j];
+            if(ticketMap[quizMap[_QuizId].tickets[i]].betIndex == _WinningInd){
+                uint256 reward = generateReward(quizMap[_QuizId].tickets[i], totalAmount, quizMap[_QuizId].options[_WinningInd]);
+                payable(ticketMap[quizMap[_QuizId].tickets[i]].owner).transfer(reward);
+                emit Withdrawn(ticketMap[quizMap[_QuizId].tickets[i]].owner, reward);
+            }
+            //removing ticket from buyer's list
+            for(uint256 j = 0; j < buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets.length; j++){
+                if(buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[j] == quizMap[_QuizId].tickets[i]){
+                    buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[j] = buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets.length - 1];
+                    buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets.pop();
                     break;
                 }
             }
-            emit Withdrawn(ticketMap[quizMap[_QuizId].tickets[i]].owner, reward);
         }
     }
 
     //For Buyer
-    function buyTicket(uint256 _QuizId) public payable onlyBuyer {
+    function buyTicket(uint256 _QuizId, uint256 betIndex) public payable onlyBuyer {
         require(quizMap[_QuizId].isEnded == false, "Quiz is already ended");
         require(msg.value >= quizMap[_QuizId].minAmt && msg.value <= quizMap[_QuizId].maxAmt, "Amount should be between min and max amount");
 
@@ -124,13 +132,13 @@ contract MarketPlaceContract {
         uint256 Date = block.timestamp;
         uint256 iD = Date + totalTickets;
 
-        Ticket memory newTicket = Ticket(iD, msg.sender, msg.value, _QuizId);
+        Ticket memory newTicket = Ticket(iD, msg.sender, msg.value, _QuizId, betIndex);
         ticketMap[iD] = newTicket;
         quizMap[_QuizId].tickets.push(iD);
         buyerMap[msg.sender].tickets.push(iD);
         buyerMap[msg.sender].totalAmt += msg.value;
         quizMap[_QuizId].totalAmt += msg.value;
-
+        quizMap[_QuizId].options[betIndex] += msg.value;
         emit TicketBought(iD, msg.sender, msg.value, _QuizId);
     }
 
