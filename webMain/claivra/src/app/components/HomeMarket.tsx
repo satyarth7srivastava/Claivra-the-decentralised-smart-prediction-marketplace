@@ -45,7 +45,7 @@ const HomeMarket : React.FC = () => {
             </div>
 
             {visibleCount < predictions.length && (
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-16">
                     <button
                         onClick={handleShowMore}
                         className="px-6 py-2 bg-primaryBlue text-primaryWhite rounded-md transition"
@@ -56,7 +56,7 @@ const HomeMarket : React.FC = () => {
             )}
 
             {visibleCount == predictions.length && (
-                    <div className="flex justify-center mt-4">
+                    <div className="flex justify-center mt-16">
                     <button
                         onClick={handleShowLess}
                         className="px-6 py-2 bg-primaryBlue text-primaryWhite rounded-md transition"

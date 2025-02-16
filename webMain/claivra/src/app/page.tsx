@@ -1,4 +1,6 @@
+import ContactUs from "./components/ContactUs";
 import Footer from "./components/Footer";
+import GetInTouch from "./components/GetInTouch";
 import HomeMarket from "./components/HomeMarket";
 import Navbar from "./components/Navbar";
 import { ArrowRight, Star } from "lucide-react";
@@ -37,9 +39,9 @@ export default function Home() {
     <input 
       type="text" 
       placeholder="Search Markets" 
-      className="drop-shadow-md bg-[#f8f8f8] placeholder-secBlack px-5 rounded-md border border-opacity-60 border-secBlack mx-16 h-14 pointer-events-none"
+      className="drop-shadow-md bg-[#f8f8f8] placeholder-secBlack px-5 rounded-md border border-opacity-60 border-secBlack mx-16 h-12 pointer-events-none"
     />
-    <div className=" mx-28  mt-6 h-14 flex gap-44">
+    <div className=" mx-28  mt-6 h-14 flex gap-44 overflow-hidden">
       <div className="flex flex-row gap-2 justify-start items-center">
         <h6 className="text-secBlack">Category: </h6>
         <button className="flex flex-row text-primaryBlue ">All <ChevronDown className="text-primaryBlue"></ChevronDown></button>
@@ -57,8 +59,11 @@ export default function Home() {
     </div>
   </div>
   <HomeMarket/>
-</div>
+  </div>
 
+  <ContactUs/>
+     
+  <GetInTouch/>
 
       {/* Footer */}
       <div>
