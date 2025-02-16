@@ -1,3 +1,5 @@
+import { Map } from "./Map";
+
 const ContactUs : React.FC = () => {
     return (
         <div className="flex flex-col justify-center bg-[#f6f6e6] items-center py-10 pd:my-24 my-20 pd:my-24 ">
@@ -31,7 +33,7 @@ const ContactUs : React.FC = () => {
                 </div>
                 {/* map */}
                 <div>
-                    
+                    <Map/>
                 </div>
             </div>
         </div>
