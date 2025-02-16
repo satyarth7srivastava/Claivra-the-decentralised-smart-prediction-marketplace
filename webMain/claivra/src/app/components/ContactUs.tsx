@@ -1,4 +1,4 @@
-import { Map } from "./Map";
+
 
 const ContactUs : React.FC = () => {
     return (
@@ -33,7 +33,7 @@ const ContactUs : React.FC = () => {
                 </div>
                 {/* map */}
                 <div>
-                    <Map/>
+                    
                 </div>
             </div>
         </div>
