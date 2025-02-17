@@ -1,5 +1,6 @@
 "use client"
 import { CalendarSearch, Star } from 'lucide-react';
+import { useRouter } from "next/navigation";
 import { useState } from 'react';
 
 interface HomeCardProps {
@@ -13,9 +14,15 @@ interface HomeCardProps {
 }
 
 const HomeCard:React.FC<HomeCardProps>= ({question, starred, comments, dollar, rewards, chance, image}) => {
+    const router = useRouter();
     const [star, setStar] = useState(starred);
+
+    const handleOnClick = () => {
+        router.push("/event");
+    };
+
     return(
-        <div className="m-4 max-w-sm flex flex-col justify-center rounded-md" style={{boxShadow :"0px 3px 3px 0px rgb(86,86,86, 0.5)"}}>
+        <div className="m-4 max-w-sm flex flex-col justify-center rounded-md" style={{boxShadow :"0px 3px 3px 0px rgb(86,86,86, 0.5)"}} onClick={handleOnClick}>
             <div className=" px-6 flex gap-8 justify-start pt-5 pb-10 items-center">
                 <img src={image} alt='image' width={68} className="rounded-full"></img>
                 <h1 className="text-secBlack max-w-64 text-base">{question}</h1>

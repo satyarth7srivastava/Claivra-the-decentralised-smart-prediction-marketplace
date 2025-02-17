@@ -16,6 +16,8 @@ export default {
         primaryWhite : '#f8f8f8',
         grey : '#989491',
         footer : '#DEE5FF',
+        green : '#4BA15F',
+        line2 : '#565656',
       },
     },
   },
