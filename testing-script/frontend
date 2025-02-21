@@ -1,0 +1,4 @@
+cd webMain/claivra/
+
+npm i
+npm run dev
