@@ -1,0 +1,6 @@
+cd blockchain/
+npm i
+
+sleep 8s
+npx hardhat compile
+npx hardhat ignition deploy ignition/modules/MPC_deploy.js --network localhost
