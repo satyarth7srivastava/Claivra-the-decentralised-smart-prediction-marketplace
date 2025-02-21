@@ -4,3 +4,7 @@ npm i
 sleep 8s
 npx hardhat compile
 npx hardhat ignition deploy ignition/modules/MPC_deploy.js --network localhost
+
+cd ignition/deployments/chain-31337/artifacts/
+
+cp MPC#MarketPlaceContract.json ../../../../../webMain/claivra/src/contracts/MPC.json
