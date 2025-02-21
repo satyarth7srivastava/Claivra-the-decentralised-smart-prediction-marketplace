@@ -1,13 +1,11 @@
-import { Contract } from "ethers";
 import { ethers } from "ethers";
 
-import { abi } from "../../../../../blockchain/ignition/deployments/chain-31337/artifacts/MPC#MarketPlaceContract.json";
-import { AddressLike } from "ethers";
+import { abi } from "../../contracts/MPC.json";
 
 
 const contractAdress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
-const myContract = null;
+let myContract = null;
 
 const initializeContract = async () => {
     const provider = new ethers.BrowserProvider(window.ethereum);
