@@ -1,15 +1,25 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+    //sending data to mongodb
+    const res = await axios.post("/api/signup", { email: email, fullName: fullName, password: password });
+    console.log(res.data);
     router.push("/verify-signup");
   };
 
@@ -63,6 +73,29 @@ const SignupPage: React.FC = () => {
                 required
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Confirm Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:ring-2 focus:ring-blue-500"
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
+
       
             {errorMessage && (
               <div className="text-red-500 text-sm mb-4">{errorMessage}</div>
