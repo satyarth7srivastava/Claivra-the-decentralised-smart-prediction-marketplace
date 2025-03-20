@@ -11,6 +11,10 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const router = useRouter();
 
+  const handleGoogleSignin = async() => {
+    await signIn("google", { callbackUrl: "/" });
+  }
+
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     if (e) {
         e.preventDefault();
@@ -41,6 +45,7 @@ const Login: React.FC = () => {
       <div className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-center text-2xl text-gray-800 font-semibold mt-4">Login</h2>
         <button
+            onClick={handleGoogleSignin}
             className="w-full flex items-center justify-center py-2 bg-blue-500 my-4 text-gray-800 rounded-lg hover:bg-blue-600 transition duration-200"
           >
             <div className="bg-white p-2 rounded-md">
