@@ -5,6 +5,7 @@ import { NEXT_AUTH_CONFIG } from "@/app/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
+    console.log("Checking authentication status...");
     const session = await getServerSession(NEXT_AUTH_CONFIG);
     if (session?.user) {
       return NextResponse.json({ isAuthenticated: true });
@@ -17,7 +18,8 @@ export async function GET(req: NextRequest) {
       ?.split("=")[1];
 
     if (!token) {
-      return NextResponse.json({ isAuthenticated: false }, { status: 401 });
+      console.log("No token found in cookies");
+      return NextResponse.json({ isAuthenticated: false }, { status: 200 });
     }
 
     jwt.verify(token, process.env.JWT_SECRET!);
