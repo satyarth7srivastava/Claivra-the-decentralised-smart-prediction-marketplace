@@ -1,5 +1,6 @@
-import connect from '@/db/connect';
-import User from '@/db/models/User';
+import connect from '@/config/connect';
+import User from '@/models/User';
+import bcrypt from 'bcryptjs';
 // import bcrypt from 'bcryptjs';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
@@ -29,8 +30,8 @@ export const NEXT_AUTH_CONFIG = {
           throw new Error("User not found");
         }
 
-        // const isValidPassword = await bcrypt.compare(credentials.password, user.password);
-        if (credentials.password!=user.password) {
+        const isValidPassword = bcrypt.compareSync(credentials.password, user.password);
+        if (!isValidPassword) {
           throw new Error("Invalid password");
         }
 
