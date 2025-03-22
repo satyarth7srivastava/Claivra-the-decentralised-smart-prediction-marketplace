@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { signIn } from "next-auth/react";
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -28,6 +29,10 @@ const SignupPage: React.FC = () => {
     };
     checkAuth();
   }, [router]);
+
+  const handleGoogleSignup = async () => {
+      await signIn("google", { callbackUrl: "/"});
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,7 +75,8 @@ const SignupPage: React.FC = () => {
       <div className="relative z-10 w-full max-w-lg bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-center text-2xl text-gray-800 font-semibold mt-4">Sign Up</h2>
 
-        <button className="w-full flex items-center justify-center py-2 bg-blue-500 my-4 text-gray-800 rounded-lg hover:bg-blue-600 transition duration-200">
+        <button className="w-full flex items-center justify-center py-2 bg-blue-500 my-4 text-gray-800 rounded-lg hover:bg-blue-600 transition duration-200"
+        onClick={handleGoogleSignup}>
           <div className="bg-white p-2 rounded-md">
             <img src="/google.png" alt="Google" className="w-6 h-6" />
           </div>

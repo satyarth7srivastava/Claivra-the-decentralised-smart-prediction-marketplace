@@ -32,7 +32,7 @@ const Login: React.FC = () => {
   const handleGoogleSignin = async () => {
     await signIn("google", { callbackUrl: "/" });
   };
-
+  
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
     const res = await signIn("credentials", {

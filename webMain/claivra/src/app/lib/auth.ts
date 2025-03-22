@@ -49,6 +49,36 @@ export const NEXT_AUTH_CONFIG = {
     signIn: '/login',
   },
   callbacks: {
+    async signIn({ user, account }: any) {
+      if (account?.provider === "google") {
+        await connect();
+        console.log("reached 1")
+        const existingUser = await User.findOne({ email: user.email });
+        console.log("reached 2")
+        if (!existingUser) {
+          console.log("reached 3")
+          const baseUsername = user.name.replace(/\s+/g, "").toLowerCase();
+          const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+          const username = `${baseUsername}${randomSuffix}`;
+
+          console.log("reached 4");
+          console.log(user.email, user.name);
+          const newUser = await User.create({
+            email : user.email,
+            fullName : user.name,
+            username,
+            password: " "
+        });
+        console.log("reached 5")
+        newUser.save();
+
+        console.log("New user created:", newUser);
+        } else {
+          console.log("User already exists:", existingUser.email);
+        }
+      }
+      return true; // Allow sign-in
+    },
     async jwt({ token, user } : any) {
       if (user) {
         token.role = user.role;
