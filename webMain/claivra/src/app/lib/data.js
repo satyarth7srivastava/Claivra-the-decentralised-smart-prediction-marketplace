@@ -1,6 +1,7 @@
 export const predictions = [
   {
       question: "Will Bitcoin surpass $70,000 by the end of 2025?",
+      options: ["Yes, definitely", "No, unlikely", "Maybe", "Not sure"],
       starred: true,
       comments: 120,
       dollar: 50, // in million
@@ -10,6 +11,7 @@ export const predictions = [
   },
   {
       question: "Will India win the ICC Cricket World Cup 2027?",
+      options: ["Yes", "No", "Possibly", "Unlikely"],
       starred: false,
       comments: 95,
       dollar: 32, // in million
@@ -19,6 +21,7 @@ export const predictions = [
   },
   {
       question: "Will AI replace 50% of customer service jobs by 2030?",
+      options: ["Yes, completely", "No, not at all", "Partially", "Uncertain"],
       starred: true,
       comments: 150,
       dollar: 45, // in million
@@ -28,6 +31,7 @@ export const predictions = [
   },
   {
       question: "Will SpaceX land humans on Mars before 2035?",
+      options: ["Yes", "No", "Maybe", "Not sure"],
       starred: true,
       comments: 180,
       dollar: 70, // in million
@@ -37,6 +41,7 @@ export const predictions = [
   },
   {
       question: "Will Ethereum gas fees drop below $1 by 2026?",
+      options: ["Yes, definitely", "No, unlikely", "Possibly", "Not sure"],
       starred: false,
       comments: 85,
       dollar: 29, // in million
@@ -46,6 +51,7 @@ export const predictions = [
   },
   {
       question: "Will a major breakthrough in cancer treatment be announced by 2028?",
+      options: ["Yes", "No", "Possibly", "Uncertain"],
       starred: true,
       comments: 210,
       dollar: 60, // in million
@@ -55,6 +61,7 @@ export const predictions = [
   },
   {
       question: "Will Apple release a foldable iPhone by 2027?",
+      options: ["Yes", "No", "Maybe", "Not sure"],
       starred: false,
       comments: 130,
       dollar: 40, // in million
@@ -64,6 +71,7 @@ export const predictions = [
   },
   {
       question: "Will Tesla’s self-driving technology achieve Level 5 autonomy by 2030?",
+      options: ["Yes, fully", "No, not at all", "Partially", "Uncertain"],
       starred: true,
       comments: 175,
       dollar: 65, // in million
@@ -73,6 +81,7 @@ export const predictions = [
   },
   {
       question: "Will the global population exceed 9 billion by 2040?",
+      options: ["Yes", "No", "Possibly", "Uncertain"],
       starred: false,
       comments: 90,
       dollar: 31, // in million
@@ -82,6 +91,7 @@ export const predictions = [
   },
   {
       question: "Will OpenAI release a GPT-5 model by the end of 2025?",
+      options: ["Yes, definitely", "No, unlikely", "Maybe", "Not sure"],
       starred: true,
       comments: 200,
       dollar: 55, // in million
@@ -91,6 +101,7 @@ export const predictions = [
   },
   {
       question: "Will a manned mission to the Moon occur before 2030?",
+      options: ["Yes", "No", "Possibly", "Uncertain"],
       starred: false,
       comments: 105,
       dollar: 37, // in million
@@ -100,6 +111,7 @@ export const predictions = [
   },
   {
       question: "Will there be a fully functional quantum computer by 2035?",
+      options: ["Yes, definitely", "No, unlikely", "Possibly", "Not sure"],
       starred: true,
       comments: 160,
       dollar: 52, // in million
