@@ -1,4 +1,4 @@
-export const predictions = [
+const predictions = [
   {
       question: "Will Bitcoin surpass $70,000 by the end of 2025?",
       options: ["Yes, definitely", "No, unlikely", "Maybe", "Not sure"],
@@ -120,3 +120,48 @@ export const predictions = [
       image: "/trump.png"
   }
 ];
+
+const quizzes = [
+  {
+      id: 0,
+      question: "What is the capital of France?",
+      options: ["Paris", "London", "Berlin", "Madrid"],
+      image: "/quiz1.png",
+      correctOption: null, // To be set by the quiz creator
+      closed: false // Indicates if the quiz is closed
+  },
+  {
+      id: 1,
+      question: "Which planet is known as the Red Planet?",
+      options: ["Earth", "Mars", "Jupiter", "Venus"],
+      image: "/quiz2.png",
+      correctOption: null,
+      closed: false
+  },
+  {
+      id: 2,
+      question: "Who wrote 'To Kill a Mockingbird'?",
+      options: ["Harper Lee", "Mark Twain", "J.K. Rowling", "Ernest Hemingway"],
+      image: "/quiz3.png",
+      correctOption: null,
+      closed: false
+  },
+  {
+      id: 3,
+      question: "What is the largest ocean on Earth?",
+      options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+      image: "/quiz4.png",
+      correctOption: null,
+      closed: false
+  },
+  {
+      id: 4,
+      question: "Who painted the Mona Lisa?",
+      options: ["Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Claude Monet"],
+      image: "/quiz5.png",
+      correctOption: null,
+      closed: false
+  }
+];
+
+export { predictions, quizzes };
