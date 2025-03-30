@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { ethers } from "ethers";
+import { set } from "mongoose";
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -9,6 +11,8 @@ const SignupPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [wallerAddress, setWalletAddress] = useState<string>("");
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -28,6 +32,24 @@ const SignupPage: React.FC = () => {
     };
     checkAuth();
   }, [router]);
+
+  const handleConnect = async () => {
+    if (isWalletConnected){
+      return;
+    }
+    setIsLoading(true);
+    try{
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner(0);
+        const address = await signer.getAddress();
+        setIsWalletConnected(true);
+        setWalletAddress(address);
+    } catch (error: any){
+      console.error("Error connecting wallet:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -125,6 +147,12 @@ const SignupPage: React.FC = () => {
               required
             />
           </div>
+
+          <button className="w-full py-2 bg-yellow-600 hover:bg-blue-700 transition duration-200 text-white rounded-lg mb-4"
+            onClick={handleConnect}
+          >
+            {(isWalletConnected) ? (<>Connected</>) : (<>Connect Wallet</>)}
+          </button>
 
           {errorMessage && <div className="text-red-500 text-sm mb-4">{errorMessage}</div>}
 
