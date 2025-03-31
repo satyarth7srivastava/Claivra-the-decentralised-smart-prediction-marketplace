@@ -164,4 +164,33 @@ contract MarketPlaceContract {
             return address(0);
         }
     }
+
+    //getter functions
+    function getTicket(uint256 _id) public view returns (Ticket memory) {
+        return ticketMap[_id];
+    }
+    function getQuiz(uint256 _id) public view returns (Quiz memory) {
+        return quizMap[_id];
+    }
+    function getBuyer(address _walletAdd) public view returns (Buyer memory) {
+        return buyerMap[_walletAdd];
+    }
+    function getSeller(address _walletAdd) public view returns (Seller memory) {
+        return sellerMap[_walletAdd];
+    }
+    function getAdmin() public view returns (address) {
+        return admin;
+    }
+    function getPredictedWinAmount(uint256 _QuizId, uint8 _betIndex, uint256 _amt) public view returns (uint256) {
+        require(quizMap[_QuizId].id > 0, "Quiz does not exist");
+        require(quizMap[_QuizId].isEnded == false, "Quiz is already ended");
+        require(_amt >= quizMap[_QuizId].minAmt && _amt <= quizMap[_QuizId].maxAmt, "Amount should be between min and max amount");
+        uint256 totalTickets = quizMap[_QuizId].tickets.length;
+        uint256 totalAmount = quizMap[_QuizId].totalAmt;
+        uint256 fee = totalAmount * 5 / 100;
+        totalAmount -= fee;
+        uint256 reward = (_amt / quizMap[_QuizId].options[_betIndex]) * totalAmount;
+        return reward;
+    }
+
 }

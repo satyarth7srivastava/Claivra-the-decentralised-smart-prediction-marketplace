@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-import { abi } from "../../contracts/MPC.json";
+import artifacts from "../../contracts/MPC.json";
 
 
 const contractAdress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
@@ -12,9 +12,10 @@ const initializeContract = async () => {
     const signer = await provider.getSigner(0);
     const contract = new ethers.Contract(
         contractAdress,
-        abi,
+        artifacts.abi,
         signer
     );
+    console.log("Contract initialized", contract);
 
     myContract = contract;
     
