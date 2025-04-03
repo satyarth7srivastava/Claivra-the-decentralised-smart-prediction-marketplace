@@ -14,6 +14,14 @@ const QuizesSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    minBetAmt: {
+        type: Number,
+        required: true
+    },
+    maxBetAmt: {
+        type: Number,
+        required: true
+    },
     quizeOptions: {
         type: [
             {

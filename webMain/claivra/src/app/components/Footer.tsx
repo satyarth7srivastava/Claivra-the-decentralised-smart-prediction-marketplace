@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
     }, []);
 
     return (
-        <div className="bg-primaryBlue text-footer h-auto pt-10 pb-2 flex flex-col overflow-hidden">
+        <div className="bg-primaryBlue text-footer h-auto pt-10 pb-2 flex flex-col overflow-hidden mt-5">
             <div className="px-12">
                 <img src="/logo-light.png" width={96} />
             </div>
