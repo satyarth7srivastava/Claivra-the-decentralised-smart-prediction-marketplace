@@ -6,6 +6,8 @@ import { ethers } from "ethers";
 import { set } from "mongoose";
 import { signIn } from "next-auth/react";
 
+import { getContract } from "../bc-utils/utils";
+
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
@@ -15,7 +17,9 @@ const SignupPage: React.FC = () => {
   const [wallerAddress, setWalletAddress] = useState<string>("");
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [role, setRole] = useState<string>("Buyer"); // Default role is Buyer
   const router = useRouter();
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -69,9 +73,17 @@ const SignupPage: React.FC = () => {
         email,
         fullName,
         password,
+        role, // Include role in the signup payload
       });
 
       if (response.data.status === "success") {
+        const contract = await getContract();
+        if(role === "Organizer"){
+          const tx = await contract.registerAsSeller();
+        }else{
+          const tx = await contract.registerAsBuyer();
+        }
+
         router.push("/");
       } else {
         setErrorMessage(response.data.message || "An error occurred. Please try again.");
@@ -152,6 +164,18 @@ const SignupPage: React.FC = () => {
               placeholder="Confirm your password"
               required
             />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Role</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="Buyer">Buyer</option>
+              <option value="Organizer">Organizer</option>
+            </select>
           </div>
 
           <button className="w-full py-2 bg-yellow-600 hover:bg-blue-700 transition duration-200 text-white rounded-lg mb-4"

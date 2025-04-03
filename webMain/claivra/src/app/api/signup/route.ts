@@ -18,9 +18,9 @@ const validatePassword = (password : string) => {
 };
 
 async function POST(req: NextRequest, res: NextResponse) : Promise<NextResponse> {
-    const {fullName, email, password} = await req.json();
+    const {fullName, email, password, role} = await req.json();
 
-    if(!fullName || !email || !password){
+    if(!fullName || !email || !password || !role){
         return NextResponse.json({
             message : "Enter all credentials"
         })
@@ -59,7 +59,8 @@ async function POST(req: NextRequest, res: NextResponse) : Promise<NextResponse>
             email,
             fullName,
             username,
-            password: hashPassword
+            password: hashPassword,
+            role,
         });
         newUser.save();
 
