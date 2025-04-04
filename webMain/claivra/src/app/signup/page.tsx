@@ -39,21 +39,27 @@ const SignupPage: React.FC = () => {
   }, [router]);
 
   const handleGoogleSignup = async () => {
-      await signIn("google", { callbackUrl: "/"});
+    await signIn("google", { callbackUrl: "/" });
   };
 
   const handleConnect = async () => {
-    if (isWalletConnected){
+    if (isWalletConnected) {
       return;
     }
     setIsLoading(true);
-    try{
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner(0);
-        const address = await signer.getAddress();
-        setIsWalletConnected(true);
-        setWalletAddress(address);
-    } catch (error: any){
+    try {
+      // Check if MetaMask is installed
+      if (typeof window.ethereum === "undefined") {
+        setErrorMessage("Please install MetaMask to use this feature.");
+        return;
+      }
+      // Request account access if needed
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner(0);
+      const address = await signer.getAddress();
+      setIsWalletConnected(true);
+      setWalletAddress(address);
+    } catch (error: any) {
       console.error("Error connecting wallet:", error);
     } finally {
       setIsLoading(false);
@@ -78,21 +84,25 @@ const SignupPage: React.FC = () => {
 
       if (response.data.status === "success") {
         const contract = await getContract();
+        if (!contract) {
+          setErrorMessage("Contract not found. Please try again.");
+          return;
+        }
         var tx = null;
-        if(role === "Organizer"){
+        if (role === "Organizer") {
           tx = await contract.registerAsSeller();
-        }else{
+        } else {
           tx = await contract.registerAsBuyer();
         }
-        if(tx == null) {
+        if (tx == null) {
           setErrorMessage("Transaction failed. Please try again.");
           return;
         }
         await tx.wait();
-        if(tx){
-          if(role === "Organizer"){
+        if (tx) {
+          if (role === "Organizer") {
             router.push("/organizer-dashboard/");
-          }else{
+          } else {
             router.push("/");
           }
         }
@@ -121,7 +131,7 @@ const SignupPage: React.FC = () => {
         <h2 className="text-center text-2xl text-gray-800 font-semibold mt-4">Sign Up</h2>
 
         <button className="w-full flex items-center justify-center py-2 bg-blue-500 my-4 text-gray-800 rounded-lg hover:bg-blue-600 transition duration-200"
-        onClick={handleGoogleSignup}>
+          onClick={handleGoogleSignup}>
           <div className="bg-white p-2 rounded-md">
             <img src="/google.png" alt="Google" className="w-6 h-6" />
           </div>
