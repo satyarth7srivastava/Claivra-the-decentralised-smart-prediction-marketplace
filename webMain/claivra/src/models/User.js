@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true, default: ' '},
     role: { type: String, required: false, default: 'buyer' },
     isConnected: { type: Boolean, required: false, default: false },
-    walletID: { type: String },
+    walletID: { type: String, default: '' },
     tickets: { type: [String], default: [] },
     loginCookie: { type: String, default: '' },
     loginCookieExpire: { type: Date, default: Date.now }
