@@ -40,7 +40,12 @@ const QuizesSchema = new mongoose.Schema({
             }
         ],
         required: true
-    }
+    },
+    approvalStatus: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
+    },
 });
 
 
