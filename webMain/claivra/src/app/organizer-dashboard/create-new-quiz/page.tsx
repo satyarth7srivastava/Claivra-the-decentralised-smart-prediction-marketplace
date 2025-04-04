@@ -47,7 +47,7 @@ export default function CreateNewQuiz() {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post("/api/quizes", quizData); // Replace with your API endpoint
+            const response = await axios.post("/api/quizes/create", quizData); // Replace with your API endpoint
             console.log("Quiz created successfully:", response.data);
             alert("Quiz created successfully!");
         } catch (error) {

@@ -7,12 +7,12 @@ export default function SellerDashboard() {
                 <h1 className="text-4xl font-bold mb-4">Seller Dashboard</h1>
                 <p className="text-lg text-gray-600 mb-8">Welcome to your dashboard!</p>
                 <div className="flex gap-6">
-                    <Link href="/seller-dashboard/create-new-quiz" legacyBehavior>
+                    <Link href="/organizer-dashboard/create-new-quiz" legacyBehavior>
                         <a className="bg-primaryBlue text-primaryWhite py-3 px-6 rounded-md hover:bg-blue-700 transition-all">
                             Create New Quiz
                         </a>
                     </Link>
-                    <Link href="/seller-dashboard/your-quizes" legacyBehavior>
+                    <Link href="/organizer-dashboard/your-quizes" legacyBehavior>
                         <a className="bg-primaryBlue text-primaryWhite py-3 px-6 rounded-md hover:bg-blue-700 transition-all">
                             Your Quizzes
                         </a>

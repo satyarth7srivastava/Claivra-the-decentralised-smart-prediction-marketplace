@@ -78,13 +78,24 @@ const SignupPage: React.FC = () => {
 
       if (response.data.status === "success") {
         const contract = await getContract();
+        var tx = null;
         if(role === "Organizer"){
-          const tx = await contract.registerAsSeller();
+          tx = await contract.registerAsSeller();
         }else{
-          const tx = await contract.registerAsBuyer();
+          tx = await contract.registerAsBuyer();
         }
-
-        router.push("/");
+        if(tx == null) {
+          setErrorMessage("Transaction failed. Please try again.");
+          return;
+        }
+        await tx.wait();
+        if(tx){
+          if(role === "Organizer"){
+            router.push("/organizer-dashboard/");
+          }else{
+            router.push("/");
+          }
+        }
       } else {
         setErrorMessage(response.data.message || "An error occurred. Please try again.");
       }

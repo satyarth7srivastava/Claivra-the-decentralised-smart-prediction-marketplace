@@ -23,6 +23,7 @@ contract MarketPlaceContract {
         uint256[] options;
         uint256[] tickets;
         bool isEnded;
+        bool isApproved;
     }
     //map list for quizzes
     mapping(uint256 => Quiz) public quizMap;
@@ -75,7 +76,7 @@ contract MarketPlaceContract {
     function createQuiz(uint256 _minAmt, uint256 _maxAmt, uint256 _id, uint256 _numOfoptions) public onlySeller {
         require(_minAmt > 0, "Minimum amount should be greater than 0");
         require(_maxAmt > _minAmt, "Maximum amount should be greater than minimum amount");
-        Quiz memory newQuiz = Quiz(_id, msg.sender, _minAmt, _maxAmt, 0, new uint256[](_numOfoptions + 1), new uint256[](0), false);
+        Quiz memory newQuiz = Quiz(_id, msg.sender, _minAmt, _maxAmt, 0, new uint256[](_numOfoptions + 1), new uint256[](0), false, false);
 
         quizMap[_id] = newQuiz;
         sellerMap[msg.sender].quizzes.push(_id);
@@ -185,7 +186,6 @@ contract MarketPlaceContract {
         require(quizMap[_QuizId].id > 0, "Quiz does not exist");
         require(quizMap[_QuizId].isEnded == false, "Quiz is already ended");
         require(_amt >= quizMap[_QuizId].minAmt && _amt <= quizMap[_QuizId].maxAmt, "Amount should be between min and max amount");
-        uint256 totalTickets = quizMap[_QuizId].tickets.length;
         uint256 totalAmount = quizMap[_QuizId].totalAmt;
         uint256 fee = totalAmount * 5 / 100;
         totalAmount -= fee;
@@ -193,4 +193,27 @@ contract MarketPlaceContract {
         return reward;
     }
 
+    //funciton for admin to withdraw amount from contract
+    function withdraw(uint256 _amt) public onlyAdmin {
+        require(_amt > 0, "Amount should be greater than 0");
+        payable(admin).transfer(_amt);
+        emit Withdrawn(admin, _amt);
+    }
+    function withdrawAll() public onlyAdmin {
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No balance to withdraw");
+        payable(admin).transfer(balance);
+        emit Withdrawn(admin, balance);
+    }
+    function getContractBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+    function appvoreRequest(uint256 _QuizId) public onlyAdmin {
+        require(quizMap[_QuizId].isApproved == false, "Quiz is already approved");
+        quizMap[_QuizId].isApproved = true;
+    }
+    function rejectRequest(uint256 _QuizId) public onlyAdmin {
+        require(quizMap[_QuizId].isApproved == false, "Quiz is already approved");
+        quizMap[_QuizId].isApproved = false;
+    }
 }
