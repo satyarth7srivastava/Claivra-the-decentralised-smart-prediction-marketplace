@@ -3,9 +3,8 @@
 import AllPredictionsTable from "@/app/components/AllPredictionsTable";
 import DashboardCard from "@/app/components/DashboardCard";
 import LineChartComponent from "@/app/components/LineChartComponent";
-import {PredictionTable} from "@/app/components/PredictionTable";
-import { UserTable } from "@/app/components/UserTable"
-
+import { PredictionTable } from "@/app/components/PredictionTable";
+import { UserTable } from "@/app/components/UserTable";
 
 // Sample user data
 const users = [
@@ -111,7 +110,8 @@ const predictions = [
     user: "Bob Smith",
     date: "2025-04-07",
     time: "11:15",
-    description: "Upcoming updates to Ethereum's L2 should significantly reduce gas fees.",
+    description:
+      "Upcoming updates to Ethereum's L2 should significantly reduce gas fees.",
   },
   {
     id: "p103",
@@ -138,7 +138,8 @@ const predictions = [
     user: "Edward Lee",
     date: "2025-04-04",
     time: "18:10",
-    description: "Speculation rises around a potential NFT integration with Meta.",
+    description:
+      "Speculation rises around a potential NFT integration with Meta.",
   },
   {
     id: "p106",
@@ -147,7 +148,8 @@ const predictions = [
     user: "Fiona Thomas",
     date: "2025-04-03",
     time: "08:50",
-    description: "The Hydra protocol launch might significantly increase Cardano's scalability.",
+    description:
+      "The Hydra protocol launch might significantly increase Cardano's scalability.",
   },
   {
     id: "p107",
@@ -156,7 +158,8 @@ const predictions = [
     user: "George Martin",
     date: "2025-04-02",
     time: "12:20",
-    description: "A favorable ruling in Ripple’s case could boost XRP's price by 30%.",
+    description:
+      "A favorable ruling in Ripple’s case could boost XRP's price by 30%.",
   },
   {
     id: "p108",
@@ -183,10 +186,10 @@ const predictions = [
     user: "Julia Green",
     date: "2025-03-30",
     time: "15:25",
-    description: "New global crypto regulations may cause short-term market corrections.",
+    description:
+      "New global crypto regulations may cause short-term market corrections.",
   },
-]
-
+];
 
 const AdminDashboard = () => {
   const handleLogout = (userId: string) => {
@@ -196,7 +199,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-y-auto  p-4 space-y-6">
+    <div className="min-h-screen overflow-y-auto  p-4 space-y-6" id="top">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <DashboardCard title="Total users" value={991} />
         <DashboardCard title="Total predictions" value={1091} />
@@ -205,22 +208,22 @@ const AdminDashboard = () => {
 
       <LineChartComponent />
 
-      <div className="container mx-auto py-10">
+      <div className="container mx-auto py-10" id="user-management">
         <h1 className="text-2xl font-bold mb-6">User Management</h1>
         <UserTable users={users} onLogout={handleLogout} />
       </div>
 
-      <div className="container mx-auto pt-6">
+      <div className="container mx-auto pt-6" id="admin-management">
         <h1 className="text-2xl font-bold mb-6">Admin Management</h1>
         <UserTable users={admins} onLogout={handleLogout} />
       </div>
 
-      <div className="container mx-auto pt-6">
-        <PredictionTable predictions={predictions}  />
+      <div className="container mx-auto pt-6" id="verify-prediction">
+        <PredictionTable predictions={predictions} />
       </div>
 
-      <div className="container mx-auto pt-6">
-        <AllPredictionsTable predictions={predictions}  />
+      <div className="container mx-auto pt-6" id="all-predictions">
+        <AllPredictionsTable predictions={predictions} />
       </div>
     </div>
   );
