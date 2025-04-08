@@ -6,7 +6,6 @@ import LineChartComponent from "@/app/components/LineChartComponent";
 import { PredictionTable } from "@/app/components/PredictionTable";
 import { UserTable } from "@/app/components/UserTable";
 
-// Sample user data
 const users = [
   {
     userId: "u123",
