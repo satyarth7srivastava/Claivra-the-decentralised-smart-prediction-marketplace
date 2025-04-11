@@ -6,45 +6,45 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 
 
-const validateEmail = (email : string) => {
+const validateEmail = (email: string) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     return emailRegex.test(email);
 };
 
-const validatePassword = (password : string) => {
+const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     // return passwordRegex.test(password); //commenting for testing
     return true;
 };
 
-async function POST(req: NextRequest, res: NextResponse) : Promise<NextResponse> {
-    const {fullName, email, password, role} = await req.json();
+async function POST(req: NextRequest, res: NextResponse): Promise<NextResponse> {
+    const { fullName, email, password, role, wallerAddress } = await req.json();
 
-    if(!fullName || !email || !password || !role){
+    if (!fullName || !email || !password || !role || !wallerAddress) {
         return NextResponse.json({
-            message : "Enter all credentials"
+            message: "Enter all credentials"
         })
     }
 
-    if(!validateEmail(email)){
+    if (!validateEmail(email)) {
         return NextResponse.json({
-            message : "Enter a valid email address"
+            message: "Enter a valid email address"
         })
     }
 
-    if(!validatePassword(password)){
+    if (!validatePassword(password)) {
         return NextResponse.json({
-            message : "Enter a valid password"
+            message: "Enter a valid password"
         })
     }
 
     try {
         await connect();
-        const existingUser = await User.findOne({email});
+        const existingUser = await User.findOne({ email });
 
-        if(existingUser){
+        if (existingUser) {
             return NextResponse.json({
-                message : "This email id already exists."
+                message: "This email id already exists."
             })
         }
 
@@ -61,6 +61,7 @@ async function POST(req: NextRequest, res: NextResponse) : Promise<NextResponse>
             username,
             password: hashPassword,
             role,
+            walletID: wallerAddress,
         });
         newUser.save();
 
@@ -73,16 +74,16 @@ async function POST(req: NextRequest, res: NextResponse) : Promise<NextResponse>
         );
 
         const response = NextResponse.json({
-            status : "success",
-            message : "User created successfully",
-            data : newUser
+            status: "success",
+            message: "User created successfully",
+            data: newUser
         });
 
-        response.cookies.set('token', token,{
+        response.cookies.set('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite :"strict",
-            maxAge : 60* 60 * 24 * 7,
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24 * 7,
         })
 
         console.log(response);

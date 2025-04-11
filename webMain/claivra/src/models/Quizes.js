@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const QuizesSchema = new mongoose.Schema({
     quizeID: {
-        type: String,
+        type: Number,
         required: true,
         unique: true
     },
@@ -46,6 +46,10 @@ const QuizesSchema = new mongoose.Schema({
         enum: ['pending', 'approved', 'rejected'],
         default: 'pending'
     },
+    owner: {
+        type: String,
+        required: true
+    }
 });
 
 

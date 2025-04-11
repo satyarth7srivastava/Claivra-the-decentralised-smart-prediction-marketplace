@@ -80,6 +80,7 @@ const SignupPage: React.FC = () => {
         fullName,
         password,
         role, // Include role in the signup payload
+        wallerAddress,
       });
 
       if (response.data.status === "success") {
