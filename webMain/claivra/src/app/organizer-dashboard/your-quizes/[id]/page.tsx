@@ -5,7 +5,6 @@ import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import axios from "axios";
 
-import { ethers } from "ethers";
 import { getContract } from "@/app/bc-utils/utils";
 
 //importing temprary image
