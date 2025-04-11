@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { ethers } from "ethers";
+
+import { getContract } from "@/app/bc-utils/utils";
 
 export default function CreateNewQuiz() {
     const [quizData, setQuizData] = useState({
@@ -47,7 +50,26 @@ export default function CreateNewQuiz() {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post("/api/quizes/create", quizData); // Replace with your API endpoint
+            //adding the wallet address of the organizer
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner(0);
+            const Address = await signer.getAddress(); // Replace with actual wallet address
+            const quizDataWithWallet = { ...quizData, Address };
+            const response = await axios.post("/api/quizes/create", quizDataWithWallet); // Replace with your API endpoint
+            if (response.status !== 200) {
+                throw new Error("Failed to create quiz");
+            }
+            const quizID = response.data.quizID; // Assuming the API returns the quiz ID
+            const contract = await getContract();
+            const tx = await contract.createQuiz(
+                quizData.minBetAmt,
+                quizData.maxBetAmt,
+                quizID,
+                quizData.quizeOptions.length
+            );
+            await tx.wait(); // Wait for the transaction to be mined
+            
+            console.log("Transaction successful:", tx);
             console.log("Quiz created successfully:", response.data);
             alert("Quiz created successfully!");
         } catch (error) {
