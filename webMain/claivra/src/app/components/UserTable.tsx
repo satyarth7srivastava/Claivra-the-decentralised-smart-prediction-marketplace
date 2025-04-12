@@ -34,7 +34,7 @@ export function UserTable({ users = [], onLogout }: UserTableProps) {
     <div className="w-full overflow-auto">
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="hover:bg-transparent">
             <TableHead className="w-[100px]">User ID</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Full Name</TableHead>
