@@ -6,38 +6,76 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { predictions } from "../../lib/data";
 import { useState } from "react";
+import axios from "axios";
 
 import { getContract } from "@/app/bc-utils/utils";
 
- const getWinning = async (betId: number, betAmount: number) => {
+//importing temprary image 
+import quizImage from "@/../public/trump.png";
+
+interface QuizOption {
+    optionID: number;
+    optionText: string;
+    totalBet: number;
+}
+
+interface Quiz {
+    id: string;
+    quizeID: number;
+    quizeName: string;
+    quizeDescription: string;
+    minBetAmt: number;
+    maxBetAmt: number;
+    quizeOptions: QuizOption[];
+    approvalStatus: 'pending' | 'approved' | 'rejected';
+}
+
+const getWinning = async (ID: number, betId: number, betAmount: number) => {
     const contract = await getContract();
-    const winning = await contract.getWinning(betId, betAmount);
+    const winning = await contract.getPredictedWinAmount(ID, betId, betAmount);
     return winning;
- }
+}
 
 export default function Event({ params }: { params: Promise<{ id: string }> }) {
-    const [id, setId] = useState<string | null>(null);
     const [betAmount, setBetAmount] = useState(0);
+    const [quizID, setQuizID] = useState(0);
     const [toWin, setToWin] = useState("");
     const [betId, setBetId] = useState("");
     const [winning, setWinning] = useState("");
+    const [event, setEvent] = useState<Quiz>(); // Replace 'any' with your event type
+    const [isLoading, setIsLoading] = useState(true);
 
     React.useEffect(() => {
-        params.then((resolvedParams) => setId(resolvedParams.id));
-    }, [params]);
+        const fetchQuize = async () => {
+            const id = await params;
+            const quizID = id.id;
+            setQuizID(Number(quizID));
+            if (quizID === null) {
+                console.error("Quiz ID is null or undefined.");
+                return;
+            }
+            try {
+                const response = await axios.post("/api/quizes/getQuizzesByID", {
+                    quizID: quizID,
+                });
+                console.log("Fetched quiz data:", response.data);
+                setEvent(response.data);
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error fetching quizzes:", error);
+                setIsLoading(false);
+            }
+        }
+        fetchQuize();
+    }, []);
 
-    if (id === null) {
+    if (isLoading) {
         return <div>Loading...</div>;
     }
 
-    const event = predictions[parseInt(id)]; // Fetch event data using id
-
-    if (!event) {
-        return <div>Event not found</div>;
-    }
     if (betId !== "") {
         var betIDNum = Number(betId);
-        const win = getWinning(betIDNum, betAmount);
+        const win = getWinning(quizID, betIDNum, betAmount);
         win.then((result) => setWinning(result.toString()));
     }
 
@@ -48,25 +86,19 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                 {/* Left div */}
                 <div className="flex flex-col w-8/12 px-16 pt-6">
                     <div className="flex gap-8 justify-start pb-14 items-center">
-                        <img src={event.image} alt="event" width={80} className="rounded-full" />
-                        <h1 className="text-secBlack text-2xl">{event.question}</h1>
-                        <Star
-                            width={40}
-                            height={30}
-                            strokeWidth={1.7}
-                            className={`ml-28 ${event.starred ? "text-yellow-500" : "text-grey"}`}
-                        />
+                        <img src={quizImage.src} alt="event" width={80} className="rounded-full" />
+                        <h1 className="text-secBlack text-2xl">{event?.quizeName}</h1>
                     </div>
                     <div className="mx-12">
                         <img src="/graph.png" className="rounded-md" />
                         <div className="flex gap-4 w-full mb-20 mt-6">
-                            {event.options.map((option, index) => (
+                            {event?.quizeOptions.map((quizeOptions, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setBetId(index.toString())}
                                     className="bg-line1 text-primaryBlack w-1/2 py-2 rounded-md"
                                 >
-                                    {option}
+                                    {quizeOptions.optionText}
                                 </button>
                             ))}
                         </div>
