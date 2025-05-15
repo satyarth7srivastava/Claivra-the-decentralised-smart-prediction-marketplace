@@ -15,7 +15,6 @@ const initializeContract = async () => {
         artifacts.abi,
         signer
     );
-    console.log("Contract initialized", contract);
 
     myContract = contract;
     

@@ -9,15 +9,14 @@ import { getContract } from "@/app/bc-utils/utils";
 
 //importing temprary image
 import quizImage from "@/../public/trump.png";
-import { set } from "mongoose";
 
 interface QuizOption {
     optionID: number;
     optionText: string;
     totalBet: number;
-  }
-  
-  interface Quiz {
+}
+
+interface Quiz {
     id: string;
     quizeID: number;
     quizeName: string;
@@ -26,7 +25,7 @@ interface QuizOption {
     maxBetAmt: number;
     quizeOptions: QuizOption[];
     approvalStatus: 'pending' | 'approved' | 'rejected';
-  }
+}
 
 export default function QuizDetails({ params }: { params: Promise<{ id: string }> }) {
     const [quiz, setQuiz] = useState<Quiz>() // Replace 'any' with your quiz type
@@ -105,13 +104,13 @@ export default function QuizDetails({ params }: { params: Promise<{ id: string }
                             {quiz.quizeOptions.map((option, index) => (
                                 <button
                                     key={index}
-                                    onClick={() => handleSetCorrectOption(index+1)}
-                                    className={`${correctOption === index+1
-                                            ? "bg-primaryBlue text-primaryWhite"
-                                            : "bg-line1"
+                                    onClick={() => handleSetCorrectOption(index + 1)}
+                                    className={`${correctOption === index + 1
+                                        ? "bg-primaryBlue text-primaryWhite"
+                                        : "bg-line1"
                                         } text-primaryBlack w-1/2 py-2 rounded-md`}
                                 >
-                                {option.optionText}
+                                    {option.optionText}
                                 </button>
                             ))}
                         </div>

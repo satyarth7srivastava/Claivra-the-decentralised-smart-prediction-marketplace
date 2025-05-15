@@ -10,11 +10,11 @@ import { getContract } from "@/app/bc-utils/utils";
 
 export default function CreateNewQuiz() {
     const [quizData, setQuizData] = useState({
-        quizeName: "",
-        quizeDescription: "",
+        quizName: "",
+        quizDescription: "",
         minBetAmt: 0,
         maxBetAmt: 0,
-        quizeOptions: [{ optionID: 1, optionText: "", totalBet: 0 }],
+        quizOptions: [{ optionID: 1, optionText: "", totalBet: 0 }],
     });
 
     const handleInputChange = (field: string, value: string) => {
@@ -22,26 +22,26 @@ export default function CreateNewQuiz() {
     };
 
     const handleOptionChange = (index: number, value: string) => {
-        const updatedOptions = [...quizData.quizeOptions];
+        const updatedOptions = [...quizData.quizOptions];
         updatedOptions[index].optionText = value;
-        setQuizData((prev) => ({ ...prev, quizeOptions: updatedOptions }));
+        setQuizData((prev) => ({ ...prev, quizOptions: updatedOptions }));
     };
 
     const addOption = () => {
         setQuizData((prev) => ({
             ...prev,
-            quizeOptions: [
-                ...prev.quizeOptions,
-                { optionID: prev.quizeOptions.length + 1, optionText: "", totalBet: 0 },
+            quizOptions: [
+                ...prev.quizOptions,
+                { optionID: prev.quizOptions.length + 1, optionText: "", totalBet: 0 },
             ],
         }));
     };
 
     const removeOption = (index: number) => {
-        const updatedOptions = quizData.quizeOptions.filter((_, i) => i !== index);
+        const updatedOptions = quizData.quizOptions.filter((_, i) => i !== index);
         setQuizData((prev) => ({
             ...prev,
-            quizeOptions: updatedOptions.map((option, i) => ({
+            quizOptions: updatedOptions.map((option, i) => ({
                 ...option,
                 optionID: i + 1,
             })),
@@ -53,21 +53,21 @@ export default function CreateNewQuiz() {
             //adding the wallet address of the organizer
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner(0);
-            const Address = await signer.getAddress(); // Replace with actual wallet address
+            const Address = await signer.getAddress();
             const quizDataWithWallet = { ...quizData, Address };
-            const response = await axios.post("/api/quizes/create", quizDataWithWallet); // Replace with your API endpoint
+            const response = await axios.post("/api/quizes/create", quizDataWithWallet);
             if (response.status !== 200) {
                 throw new Error("Failed to create quiz");
             }
-            const quizID = response.data.quizID; // Assuming the API returns the quiz ID
+            const quizID = response.data.quizID;
             const contract = await getContract();
             const tx = await contract.createQuiz(
                 quizData.minBetAmt,
                 quizData.maxBetAmt,
                 quizID,
-                quizData.quizeOptions.length
+                quizData.quizOptions.length
             );
-            await tx.wait(); // Wait for the transaction to be mined
+            await tx.wait();
             
             console.log("Transaction successful:", tx);
             console.log("Quiz created successfully:", response.data);
@@ -89,16 +89,16 @@ export default function CreateNewQuiz() {
                         <input
                             type="text"
                             className="w-full py-2 px-4 rounded-md border border-line1"
-                            value={quizData.quizeName}
-                            onChange={(e) => handleInputChange("quizeName", e.target.value)}
+                            value={quizData.quizName}
+                            onChange={(e) => handleInputChange("quizName", e.target.value)}
                         />
                     </div>
                     <div>
                         <label className="text-sm text-line2">Quiz Description</label>
                         <textarea
                             className="w-full py-2 px-4 rounded-md border border-line1"
-                            value={quizData.quizeDescription}
-                            onChange={(e) => handleInputChange("quizeDescription", e.target.value)}
+                            value={quizData.quizDescription}
+                            onChange={(e) => handleInputChange("quizDescription", e.target.value)}
                         />
                     </div>
                     <div>
@@ -122,7 +122,7 @@ export default function CreateNewQuiz() {
                     <div>
                         <label className="text-sm text-line2">Options</label>
                         <div className="flex flex-col gap-2">
-                            {quizData.quizeOptions.map((option, index) => (
+                            {quizData.quizOptions.map((option, index) => (
                                 <div key={index} className="flex items-center gap-2">
                                     <input
                                         type="text"
@@ -134,7 +134,7 @@ export default function CreateNewQuiz() {
                                     <button
                                         className="text-red-500"
                                         onClick={() => removeOption(index)}
-                                        disabled={quizData.quizeOptions.length <= 1}
+                                        disabled={quizData.quizOptions.length <= 1}
                                     >
                                         Remove
                                     </button>
