@@ -1,5 +1,6 @@
 "use client"
 import axios from 'axios'; 
+import { getContract } from '../bc-utils/utils';
 import { useEffect, useState } from "react"
 import {
   Dialog,
@@ -44,6 +45,10 @@ export function PredictionTable({ predictions = [] }: PredictionTableProps) {
   const handleAction = async (type: "approve" | "reject", prediction: Prediction) => {
   try {
     if (type === "approve") {
+      //blockchain related code
+      const contract = await getContract();
+      contract.appvoreRequest(prediction.quizID);
+
       await axios.post(`/api/quizes/updateStatus`, {
         quizID: prediction._id,
         status: "approved",
