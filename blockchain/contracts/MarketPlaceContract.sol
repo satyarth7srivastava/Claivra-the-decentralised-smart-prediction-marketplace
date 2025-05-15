@@ -4,6 +4,7 @@ pragma solidity ^0.8.16;
 contract MarketPlaceContract {
     //Admin address
     address private admin;
+    uint256 private profit = 0;
     //Variables and structs
     struct Ticket {
         uint256 id;
@@ -104,6 +105,7 @@ contract MarketPlaceContract {
         uint256 totalAmount = quizMap[_QuizId].totalAmt;
         uint256 fee = totalAmount * 5 / 100;
         totalAmount -= fee;
+        profit += fee;
         payable(admin).transfer(fee);
         for (uint256 i = 0; i < totalTickets; i++) {
             if(ticketMap[quizMap[_QuizId].tickets[i]].betIndex == _WinningInd){
@@ -196,14 +198,16 @@ contract MarketPlaceContract {
     //funciton for admin to withdraw amount from contract
     function withdraw(uint256 _amt) public onlyAdmin {
         require(_amt > 0, "Amount should be greater than 0");
+        require(_amt <= address(this).balance, "Insufficient balance");
+        require(_amt <= profit, "Amount should be less than profit");
         payable(admin).transfer(_amt);
+        profit -= _amt;
         emit Withdrawn(admin, _amt);
     }
     function withdrawAll() public onlyAdmin {
-        uint256 balance = address(this).balance;
-        require(balance > 0, "No balance to withdraw");
-        payable(admin).transfer(balance);
-        emit Withdrawn(admin, balance);
+        require(profit > 0, "No balance to withdraw");
+        payable(admin).transfer(profit);
+        emit Withdrawn(admin, profit);
     }
     function getContractBalance() public view returns (uint256) {
         return address(this).balance;
@@ -215,5 +219,8 @@ contract MarketPlaceContract {
     function rejectRequest(uint256 _QuizId) public onlyAdmin {
         require(quizMap[_QuizId].isApproved == false, "Quiz is already approved");
         quizMap[_QuizId].isApproved = false;
+    }
+    function getProfit() public view onlyAdmin returns (uint256) {
+        return profit;
     }
 }
