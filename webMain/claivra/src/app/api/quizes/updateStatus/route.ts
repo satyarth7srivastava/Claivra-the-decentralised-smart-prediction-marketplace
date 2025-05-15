@@ -1,24 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import connect from "@/config/connect";
 import Quizes from "@/models/Quizes";
 
 async function POST(request: NextRequest) {
     try {
         await connect();
-        const {quizeID, status} = await request.json();
-        const quizzes = await Quizes.findOne({ quizeID : quizeID });
-        //updating the status of the quiz
-        if(quizzes){
-            quizzes.approvalStatus = status;
-            await quizzes.save();
+        const { quizID, status } = await request.json();  // Corrected 'quizeID' to 'quizID'
+
+        // Finding the quiz by the correct ID field
+        const quiz = await Quizes.findOne({ _id: quizID }); // Ensuring the ID is passed correctly
+
+        if (quiz) {
+            quiz.approvalStatus = status;  // Assuming the field is 'approvalStatus' for updating
+            await quiz.save();
         }
-        return NextResponse.json(quizzes, { status: 200 });
+
+        return NextResponse.json(quiz, { status: 200 }); // Sending the updated quiz object
     } catch (error) {
-        console.error("Error Updating quize Status:", error);
-        return NextResponse.json({ error: "Error Updating quize Status" }, { status: 500 });
+        console.error("Error Updating quiz Status:", error);
+        return NextResponse.json({ error: "Error Updating quiz Status" }, { status: 500 });
     }
 }
-
 
 export { POST };
