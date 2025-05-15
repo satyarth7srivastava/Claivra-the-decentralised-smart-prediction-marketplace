@@ -5,6 +5,9 @@ import DashboardCard from "@/app/components/DashboardCard";
 import LineChartComponent from "@/app/components/LineChartComponent";
 import { PredictionTable } from "@/app/components/PredictionTable";
 import { UserTable } from "@/app/components/UserTable";
+import { useState, useEffect } from "react";
+import axios from "axios";
+
 
 const users = [
   {
@@ -92,110 +95,28 @@ const admins = [
   },
 ];
 
-const predictions = [
-  {
-    id: "p101",
-    title: "Bitcoin to hit $70K",
-    userId: "u001",
-    user: "Alice Johnson",
-    date: "2025-04-08",
-    time: "14:30",
-    description: "With recent ETF approvals, Bitcoin could surge past $70,000.",
-  },
-  {
-    id: "p102",
-    title: "Ethereum gas fees to drop",
-    userId: "u002",
-    user: "Bob Smith",
-    date: "2025-04-07",
-    time: "11:15",
-    description:
-      "Upcoming updates to Ethereum's L2 should significantly reduce gas fees.",
-  },
-  {
-    id: "p103",
-    title: "Dogecoin back in top 10",
-    userId: "u003",
-    user: "Charlie Davis",
-    date: "2025-04-06",
-    time: "09:45",
-    description: "With Elon Musk's recent support, DOGE could make a comeback.",
-  },
-  {
-    id: "p104",
-    title: "Solana to outperform ETH",
-    userId: "u004",
-    user: "Diana Patel",
-    date: "2025-04-05",
-    time: "16:00",
-    description: "Solana’s throughput and recent adoption could push it ahead.",
-  },
-  {
-    id: "p105",
-    title: "Polygon will partner with Meta",
-    userId: "u005",
-    user: "Edward Lee",
-    date: "2025-04-04",
-    time: "18:10",
-    description:
-      "Speculation rises around a potential NFT integration with Meta.",
-  },
-  {
-    id: "p106",
-    title: "Cardano launches new update",
-    userId: "u006",
-    user: "Fiona Thomas",
-    date: "2025-04-03",
-    time: "08:50",
-    description:
-      "The Hydra protocol launch might significantly increase Cardano's scalability.",
-  },
-  {
-    id: "p107",
-    title: "XRP wins major lawsuit",
-    userId: "u007",
-    user: "George Martin",
-    date: "2025-04-02",
-    time: "12:20",
-    description:
-      "A favorable ruling in Ripple’s case could boost XRP's price by 30%.",
-  },
-  {
-    id: "p108",
-    title: "Litecoin to double in value",
-    userId: "u008",
-    user: "Hannah White",
-    date: "2025-04-01",
-    time: "19:40",
-    description: "Historical halving patterns indicate a bullish run for LTC.",
-  },
-  {
-    id: "p109",
-    title: "Avalanche becomes top DeFi chain",
-    userId: "u009",
-    user: "Isaac Brown",
-    date: "2025-03-31",
-    time: "10:00",
-    description: "AVAX shows promise with increasing TVL and ecosystem growth.",
-  },
-  {
-    id: "p110",
-    title: "Regulations to hit crypto hard",
-    userId: "u010",
-    user: "Julia Green",
-    date: "2025-03-30",
-    time: "15:25",
-    description:
-      "New global crypto regulations may cause short-term market corrections.",
-  },
-];
-
 const AdminDashboard = () => {
+  const [predictions, setPredictions] = useState([]);
+
   const handleLogout = (userId: string) => {
     console.log(
       `User with ID ${userId} has been logged out from the parent component`
     );
   };
+
+  useEffect(() => {
+  const fetchPredictions = async () => {
+    try {
+      const response = await axios.get("/api/quizes/getAllQuizes");
+      setPredictions(response.data);
+    } catch (error) {
+      console.error("Error fetching predictions:", error);
+    }
+  };
+
+  fetchPredictions();
+}, []);
+
 
   return (
     <div className="min-h-screen overflow-y-auto  p-4 space-y-6" id="top">
