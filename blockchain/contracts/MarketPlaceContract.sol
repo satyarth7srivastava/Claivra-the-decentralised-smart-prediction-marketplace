@@ -5,6 +5,7 @@ contract MarketPlaceContract {
     //Admin address
     address private admin;
     uint256 private profit = 0;
+    uint256 private constant ONE_ETH = 10**18;
     //Variables and structs
     struct Ticket {
         uint256 id;
