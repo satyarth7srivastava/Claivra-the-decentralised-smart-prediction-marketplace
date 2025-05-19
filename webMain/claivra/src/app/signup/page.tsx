@@ -208,9 +208,9 @@ const SignupPage: React.FC = () => {
 
           {errorMessage && <div className="text-red-500 text-sm mb-4">{errorMessage}</div>}
 
-          <button type="submit" className="w-full py-2 bg-gray-500 hover:bg-blue-700 transition duration-200 text-white rounded-lg">
+          {/* <button type="submit" className="w-full py-2 bg-gray-500 hover:bg-blue-700 transition duration-200 text-white rounded-lg">
             Continue
-          </button>
+          </button> */}
         </form>
 
         <div className="text-center mt-6">

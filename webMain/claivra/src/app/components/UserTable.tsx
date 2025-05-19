@@ -4,14 +4,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
 import { toast } from "sonner"
+import axios from "axios"
+import { useEffect } from "react"
 
 interface User {
-  userId: string
+  _id: string
   email: string
-  fullName: string
+  fullName : string
   username: string
   role: string
-  walletId: string
+  walletID: string
 }
 
 interface UserTableProps {
@@ -20,18 +22,33 @@ interface UserTableProps {
 }
 
 export function UserTable({ users = [], onLogout }: UserTableProps) {
-  const handleLogout = (user: User) => {
-    console.log(`Logging out user:`, user)
 
-    if (onLogout) {
-      onLogout(user.userId)
+  useEffect(() => {
+    const shouldScroll = localStorage.getItem("scrollToUsersTable");
+    if (shouldScroll) {
+      const el = document.getElementById("usersTable");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+      localStorage.removeItem("scrollToUsersTable"); 
     }
+  }, []);
 
-    toast.success(`${user.fullName} (${user.username}) has been logged out`)
-  }
+
+  const handleLogout = async (userId: string) => {
+    try{
+      const res = await axios.delete(`/api/users/deleteUser?id=${userId}`);
+      if (res.status !== 200) throw new Error("Logout failed");
+      localStorage.setItem("scrollToUsersTable", "true");
+      window.location.reload();
+      toast.success("User logged out");
+    } catch (error) {
+      toast.error("Failed to logout user");
+    }
+  };
 
   return (
-    <div className="w-full overflow-auto">
+    <div className="w-full overflow-auto" id="usersTable">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -53,8 +70,8 @@ export function UserTable({ users = [], onLogout }: UserTableProps) {
             </TableRow>
           ) : (
             users.map((user) => (
-              <TableRow key={user.userId}>
-                <TableCell className="font-medium">{user.userId}</TableCell>
+              <TableRow key={user._id}>
+                <TableCell className="font-medium">{user._id}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.fullName}</TableCell>
                 <TableCell className="hidden md:table-cell">{user.username}</TableCell>
@@ -69,9 +86,9 @@ export function UserTable({ users = [], onLogout }: UserTableProps) {
                     {user.role}
                   </span>
                 </TableCell>
-                <TableCell className="hidden lg:table-cell font-mono text-xs">{user.walletId}</TableCell>
+                <TableCell className="hidden lg:table-cell font-mono text-xs">{user.walletID}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" onClick={() => handleLogout(user)} className="h-8 w-8 p-0">
+                  <Button variant="ghost" size="sm" onClick={() => handleLogout(user._id)} className="h-8 w-8 p-0">
                     <span className="sr-only">Log out {user.username}</span>
                     <LogOut className="h-4 w-4" />
                   </Button>
