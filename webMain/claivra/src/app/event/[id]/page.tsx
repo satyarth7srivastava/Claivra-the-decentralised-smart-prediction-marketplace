@@ -21,12 +21,12 @@ interface QuizOption {
 
 interface Quiz {
     id: string;
-    quizeID: number;
-    quizeName: string;
-    quizeDescription: string;
+    quizID: number;
+    quizName: string;
+    quizDescription: string;
     minBetAmt: number;
     maxBetAmt: number;
-    quizeOptions: QuizOption[];
+    quizOptions: QuizOption[];
     approvalStatus: 'pending' | 'approved' | 'rejected';
 }
 
@@ -87,12 +87,12 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex flex-col w-8/12 px-16 pt-6">
                     <div className="flex gap-8 justify-start pb-14 items-center">
                         <img src={quizImage.src} alt="event" width={80} className="rounded-full" />
-                        <h1 className="text-secBlack text-2xl">{event?.quizeName}</h1>
+                        <h1 className="text-secBlack text-2xl">{event?.quizName}</h1>
                     </div>
                     <div className="mx-12">
                         <img src="/graph.png" className="rounded-md" />
                         <div className="flex gap-4 w-full mb-20 mt-6">
-                            {event?.quizeOptions.map((quizeOptions, index) => (
+                            {event?.quizOptions.map((quizeOptions, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setBetId(index.toString())}

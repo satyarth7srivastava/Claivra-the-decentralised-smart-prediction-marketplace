@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { getContract, connectMetamask } from "@/app/bc-utils/utils";
 import { signIn } from "next-auth/react";
 import axios from "axios";
+import { ethers } from "ethers";
 
 const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,25 +33,70 @@ const Login: React.FC = () => {
   const handleGoogleSignin = async () => {
     await signIn("google", { callbackUrl: "/" });
   };
-  
+
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (res?.error) {
-      setErrorMessage("Login failed: " + res.error);
-    } else {
-      router.push("/");
+    try {
+      const res = await axios.post("api/login", {
+        email,
+        password
+      });
+      if (res.data.status === "success") {
+        const role = res.data.data.role;
+        if (role === "Admin") {
+          router.push("/admin");
+        } else if (role === "Buyer") {
+          router.push("/buyer");
+        }
+        else if (role === "Organizer") {
+          router.push("/organizer-dashboard");
+        } else {
+          router.push("/");
+        }
+      } else {
+        setErrorMessage("Login failed: " + res.data.message);
+      }
+    } catch (error: any) {
+      console.error("Error during login:", error);
+      setErrorMessage("Login failed: " + error.message);
     }
+
   };
 
   const handleMetaMaskLogin = async () => {
-    const contract = getContract();
-    connectMetamask(contract, true);
+    try {
+      const contract = await getContract();
+      const isValid = await connectMetamask(contract, true);
+      if (!isValid) {
+        setErrorMessage("MetaMask login failed");
+        return;
+      }
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner(0);
+      const address = await signer.getAddress();
+      const res = await axios.post("api/login", {
+        walletAddrss: address
+      });
+
+      if (res.data.status === "success") {
+        const role = res.data.data.role;
+        if (role === "Admin") {
+          router.push("/admin");
+        } else if (role === "Buyer") {
+          router.push("/buyer");
+        }
+        else if (role === "Organizer") {
+          router.push("/organizer-dashboard");
+        } else {
+          router.push("/");
+        }
+      } else {
+        setErrorMessage("MetaMask login failed: " + res.data.message);
+      }
+    } catch (error: any) {
+      console.error("Error during MetaMask login:", error);
+      setErrorMessage("MetaMask login failed: " + error.message);
+    }
   };
 
   if (isLoading) {

@@ -22,6 +22,11 @@ const initializeContract = async () => {
 }
 
 const connectMetamask = async (_contract, isBuyer) => {
+    //checking if metamask is installed
+    if (typeof window.ethereum === "undefined") {
+        alert("Please install MetaMask to use this feature.");
+        return false;
+    }
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner(0);
     const contract = _contract.connect(signer);
