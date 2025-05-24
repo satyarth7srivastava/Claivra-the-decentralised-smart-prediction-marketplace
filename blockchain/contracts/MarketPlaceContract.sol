@@ -96,6 +96,12 @@ contract MarketPlaceContract {
 
     //Contract's core functions
     function generateReward(uint256 _TicketId, uint256 _TotalAmt, uint256 correctOptionBet) private view returns (uint256){
+        if(correctOptionBet == 0) {
+            return 0; // Avoid division by zero
+        }
+        if(ticketMap[_TicketId].amt == 0) {
+            return 0; // No amount bet on this ticket
+        }
         uint256 reward = (ticketMap[_TicketId].amt / correctOptionBet) * _TotalAmt;
         return reward;
     }
@@ -190,9 +196,16 @@ contract MarketPlaceContract {
         require(quizMap[_QuizId].isEnded == false, "Quiz is already ended");
         require(_amt >= quizMap[_QuizId].minAmt && _amt <= quizMap[_QuizId].maxAmt, "Amount should be between min and max amount");
         uint256 totalAmount = quizMap[_QuizId].totalAmt;
+        if( totalAmount == 0) {
+            return 0; // No bets placed yet
+        }
         uint256 fee = totalAmount * 5 / 100;
         totalAmount -= fee;
-        uint256 reward = (_amt / quizMap[_QuizId].options[_betIndex]) * totalAmount;
+        uint256 betOnOption = quizMap[_QuizId].options[_betIndex];
+        if( betOnOption == 0) {
+            betOnOption = 1; // Avoid division by zero
+        }
+        uint256 reward = (_amt / betOnOption) * totalAmount;
         return reward;
     }
 

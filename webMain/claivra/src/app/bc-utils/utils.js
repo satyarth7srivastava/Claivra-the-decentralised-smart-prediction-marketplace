@@ -31,7 +31,7 @@ const connectMetamask = async (_contract, isBuyer) => {
     const signer = await provider.getSigner(0);
     const contract = _contract.connect(signer);
     const addressBuyer = await signer.getAddress();
-    const adr = contract.login(addressBuyer, isBuyer);
+    const adr = await contract.login(addressBuyer, isBuyer);
     return (adr === addressBuyer);
 }
 

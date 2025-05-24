@@ -66,7 +66,10 @@ const Login: React.FC = () => {
   const handleMetaMaskLogin = async () => {
     try {
       const contract = await getContract();
-      const isValid = await connectMetamask(contract, true);
+      //fix this one bro wth yuo doin
+      const isValid1 = await connectMetamask(contract, true);
+      const isValid2 = await connectMetamask(contract, false);
+      const isValid = isValid1 || isValid2;
       if (!isValid) {
         setErrorMessage("MetaMask login failed");
         return;
@@ -75,7 +78,7 @@ const Login: React.FC = () => {
       const signer = await provider.getSigner(0);
       const address = await signer.getAddress();
       const res = await axios.post("api/login", {
-        walletAddrss: address
+        walletAddress: address
       });
 
       if (res.data.status === "success") {

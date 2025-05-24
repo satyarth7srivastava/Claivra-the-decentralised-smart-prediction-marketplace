@@ -24,7 +24,7 @@ interface Prediction {
 }
 
 export default function HomeCard({ 
-  _id, quizName, minBetAmt, maxBetAmt, quizOptions , imageUrl
+  quizID, quizName, minBetAmt, maxBetAmt, quizOptions , imageUrl
 }: Prediction) {
   const router = useRouter();
 //   const [star, setStar] = useState(false);
@@ -32,7 +32,7 @@ export default function HomeCard({
   const totalBet = quizOptions.reduce((sum, option) => sum + (option.totalBet ?? 0), 0);
 
   const handleOnClick = () => {
-    router.push(`/quiz/${_id}`);
+    router.push(`/event/${quizID}`);
   };
 
   return (

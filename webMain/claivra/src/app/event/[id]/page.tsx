@@ -32,18 +32,44 @@ interface Quiz {
 
 const getWinning = async (ID: number, betId: number, betAmount: number) => {
     const contract = await getContract();
+    console.log("Bet ID:", betId);
+    console.log("Bet Amount:", betAmount);
+    console.log("Quiz ID:", ID);
     const winning = await contract.getPredictedWinAmount(ID, betId, betAmount);
     return winning;
 }
 
+const handleBuyNow = async (betAmount: number, quizID: number, betId: number) => {
+    const contract = await getContract();
+    const tx = await contract.buyTicket(quizID, betId,{value: betAmount});
+    console.log("Transaction:", tx);
+    return tx;
+}
+
+
+
 export default function Event({ params }: { params: Promise<{ id: string }> }) {
     const [betAmount, setBetAmount] = useState(0);
     const [quizID, setQuizID] = useState(0);
-    const [toWin, setToWin] = useState("");
     const [betId, setBetId] = useState("");
     const [winning, setWinning] = useState("");
     const [event, setEvent] = useState<Quiz>(); // Replace 'any' with your event type
     const [isLoading, setIsLoading] = useState(true);
+
+
+    const generatePredictedWinAmount = async () => {
+        if (betAmount <= 0 || quizID <= 0 || betId === "") {
+            console.error("Invalid input values.");
+            return;
+        }
+        try {
+            const winAmount = await getWinning(quizID, Number(betId), betAmount);
+            console.log("Predicted winning amount:", winAmount);
+            setWinning(winAmount.toString());
+        } catch (error) {
+            console.error("Error fetching winning amount:", error);
+        }
+    };
 
     React.useEffect(() => {
         const fetchQuize = async () => {
@@ -73,11 +99,6 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
         return <div>Loading...</div>;
     }
 
-    if (betId !== "") {
-        var betIDNum = Number(betId);
-        const win = getWinning(quizID, betIDNum, betAmount);
-        win.then((result) => setWinning(result.toString()));
-    }
 
     return (
         <div>
@@ -92,13 +113,13 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                     <div className="mx-12">
                         <img src="/graph.png" className="rounded-md" />
                         <div className="flex gap-4 w-full mb-20 mt-6">
-                            {event?.quizOptions.map((quizeOptions, index) => (
+                            {event?.quizOptions.map((quizOptions, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setBetId(index.toString())}
-                                    className="bg-line1 text-primaryBlack w-1/2 py-2 rounded-md"
+                                    className={(betId === index.toString() ? "bg-primaryBlue text-primaryWhite" : "bg-primaryWhite text-primaryBlack") + " flex items-center gap-2 px-4 py-2 rounded-md border border-secBlack hover:bg-primaryBlue hover:text-primaryWhite transition-all duration-300"}
                                 >
-                                    {quizeOptions.optionText}
+                                    {quizOptions.optionText}
                                 </button>
                             ))}
                         </div>
@@ -108,7 +129,8 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                                 placeholder="Market Summary"
                                 className="drop-shadow-md bg-[#f8f8f8] placeholder-primaryBlack px-4 rounded-md border border-opacity-60 border-secBlack w-full py-3 pointer-events-none"
                             />
-                            <button className="bg-primaryBlue text-primaryWhite py-3 px-8 rounded-md">
+                            <button className="bg-primaryBlue text-primaryWhite py-3 px-8 rounded-md"
+                                onClick={generatePredictedWinAmount}>
                                 Generate
                             </button>
                         </div>
@@ -141,15 +163,6 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                         />
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <label className="text-sm text-line2">To win</label>
-                        <input
-                            className="py-1.5 bg-primaryWhite px-4 rounded-sm"
-                            value={toWin}
-                            onChange={(e) => setToWin(e.target.value)}
-                        />
-                    </div>
-
                     <div className="flex flex-col gap-2 text-line2 mt-10 text-sm">
                         <div className="flex justify-between">
                             <h1>Maximum winning</h1>
@@ -157,7 +170,10 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                         </div>
                     </div>
 
-                    <button className="bg-primaryBlue text-primaryWhite py-2.5 px-8 rounded-md my-8">
+                    <button 
+                        onClick={() => handleBuyNow(betAmount, quizID, Number(betId))}
+                        disabled={betAmount <= 0}
+                    className="bg-primaryBlue text-primaryWhite py-2.5 px-8 rounded-md my-8">
                         Buy Now
                     </button>
                 </div>
