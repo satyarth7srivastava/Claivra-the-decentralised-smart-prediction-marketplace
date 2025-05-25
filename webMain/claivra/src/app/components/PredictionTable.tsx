@@ -64,6 +64,9 @@ export function PredictionTable({ predictions = [] }: PredictionTableProps) {
       toast.success(`Approved prediction "${prediction.quizName}" from user ${prediction.owner}`);
     } else if (type === "reject") {
 
+      const contract = await getContract();
+      contract.rejectRequest(prediction.quizID);
+
       console.log("Quiz ID to reject:", prediction._id, prediction.quizID, prediction.quizName);
       await axios.delete(`/api/quizes/deleteQuiz?id=${prediction._id}`);
       localStorage.setItem("scrollToPredictionTable", "true");

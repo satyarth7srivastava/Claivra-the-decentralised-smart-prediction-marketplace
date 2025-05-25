@@ -15,12 +15,12 @@ interface QuizOption {
 
 interface Quiz {
   id: string;
-  quizeID: number;
-  quizeName: string;
-  quizeDescription: string;
+  quizID: number;
+  quizName: string;
+  quizDescription: string;
   minBetAmt: number;
   maxBetAmt: number;
-  quizeOptions: QuizOption[];
+  quizOptions: QuizOption[];
   approvalStatus: 'pending' | 'approved' | 'rejected';
 }
 
@@ -37,6 +37,7 @@ const YourQuizzes = () => {
       try {
         const response = await axios.post("/api/quizes/getQuizzes", {
           walletAddress: Address});
+        console.log(response.data);
         setQuizzes(response.data);
       } catch (error) {
         console.error("Error fetching quizzes:", error);
@@ -59,10 +60,10 @@ const YourQuizzes = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6">
           {quizzes.map((quiz) => (
             <div
-              key={quiz.quizeID}
+              key={quiz.quizID}
               className="m-4 max-w-sm flex flex-col justify-center rounded-md cursor-pointer"
               style={{ boxShadow: "0px 3px 3px 0px rgb(86,86,86, 0.5)" }}
-              onClick={() => handleQuizClick(quiz.quizeID)}
+              onClick={() => handleQuizClick(quiz.quizID)}
             >
               <div className="px-6 flex gap-8 justify-start pt-5 pb-10 items-center">
                 <img
@@ -72,7 +73,7 @@ const YourQuizzes = () => {
                   className="rounded-full"
                 />
                 <h1 className="text-secBlack max-w-64 text-base">
-                  {quiz.quizeName}
+                  {quiz.quizName}
                 </h1>
               </div>
               <div className="px-4 pb-4">

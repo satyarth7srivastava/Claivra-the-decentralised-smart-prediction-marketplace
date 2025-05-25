@@ -9,6 +9,7 @@ import { getContract } from "@/app/bc-utils/utils";
 
 //importing temprary image
 import quizImage from "@/../public/trump.png";
+import { toast , ToastContainer} from "react-toastify";
 
 interface QuizOption {
     optionID: number;
@@ -18,12 +19,12 @@ interface QuizOption {
 
 interface Quiz {
     id: string;
-    quizeID: number;
-    quizeName: string;
-    quizeDescription: string;
+    quizID: number;
+    quizName: string;
+    quizDescription: string;
     minBetAmt: number;
     maxBetAmt: number;
-    quizeOptions: QuizOption[];
+    quizOptions: QuizOption[];
     approvalStatus: 'pending' | 'approved' | 'rejected';
 }
 
@@ -37,6 +38,7 @@ export default function QuizDetails({ params }: { params: Promise<{ id: string }
         const fetchQuize = async () => {
             const id = await params;
             const quizID = id.id;
+            console.log("Quiz ID from params:", quizID);
             if (quizID === null) {
                 console.error("Quiz ID is null or undefined.");
                 return;
@@ -66,7 +68,7 @@ export default function QuizDetails({ params }: { params: Promise<{ id: string }
 
     const handleSetCorrectOption = (optionIndex: number) => {
         setCorrectOption(optionIndex);
-        alert(`Correct option set to: ${quiz.quizeOptions[optionIndex - 1].optionText}`);
+        toast.success(`Correct option set to: ${quiz.quizOptions[optionIndex - 1].optionText}`);
     };
 
     const handleCloseQuiz = async () => {
@@ -77,7 +79,7 @@ export default function QuizDetails({ params }: { params: Promise<{ id: string }
                 alert("Contract not found. Please try again.");
                 return;
             }
-            const tx = await contract.endQuiz(quiz.quizeID, correctOption);
+            const tx = await contract.endQuiz(quiz.quizID, correctOption);
             await tx.wait();
             setQuizClosed(true);
         } catch (error: any) {
@@ -94,14 +96,16 @@ export default function QuizDetails({ params }: { params: Promise<{ id: string }
             <div className="flex gap-10">
                 {/* Left div */}
                 <div className="flex flex-col w-8/12 px-16 pt-6">
+                    <ToastContainer aria-label="Notification Toasts" />
                     <div className="flex gap-8 justify-start pb-14 items-center">
                         <img src={quizImage.src} alt="quiz" width={80} className="rounded-full" />
-                        <h1 className="text-secBlack text-2xl">{quiz.quizeName}</h1>
+                        <h1 className="text-secBlack text-2xl">{quiz.quizName}</h1>
                     </div>
                     <div className="mx-12">
                         <img src="/graph.png" className="rounded-md" />
                         <div className="flex gap-4 w-full mb-20 mt-6">
-                            {quiz.quizeOptions.map((option, index) => (
+                            {Array.isArray(quiz.quizOptions) &&
+                                quiz.quizOptions.map((option, index) => (
                                 <button
                                     key={index}
                                     onClick={() => handleSetCorrectOption(index + 1)}

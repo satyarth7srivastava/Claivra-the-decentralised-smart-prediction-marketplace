@@ -8,7 +8,7 @@ async function POST(request: NextRequest) {
         await connect();
         const {quizID} = await request.json();
         console.log(quizID);
-        const quizzes = await Quizes.findOne({ quizeID : quizID });
+        const quizzes = await Quizes.findOne({ quizID : quizID });
         return NextResponse.json(quizzes, { status: 200 });
     } catch (error) {
         console.error("Error fetching quizzes:", error);

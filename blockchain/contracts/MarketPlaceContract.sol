@@ -4,6 +4,8 @@ pragma solidity ^0.8.16;
 contract MarketPlaceContract {
     //Admin address
     address private admin;
+    uint256 private profit = 0;
+    uint256 private constant ONE_ETH = 10**18;
     //Variables and structs
     struct Ticket {
         uint256 id;
@@ -94,6 +96,12 @@ contract MarketPlaceContract {
 
     //Contract's core functions
     function generateReward(uint256 _TicketId, uint256 _TotalAmt, uint256 correctOptionBet) private view returns (uint256){
+        if(correctOptionBet == 0) {
+            return 0; // Avoid division by zero
+        }
+        if(ticketMap[_TicketId].amt == 0) {
+            return 0; // No amount bet on this ticket
+        }
         uint256 reward = (ticketMap[_TicketId].amt / correctOptionBet) * _TotalAmt;
         return reward;
     }
@@ -104,6 +112,7 @@ contract MarketPlaceContract {
         uint256 totalAmount = quizMap[_QuizId].totalAmt;
         uint256 fee = totalAmount * 5 / 100;
         totalAmount -= fee;
+        profit += fee;
         payable(admin).transfer(fee);
         for (uint256 i = 0; i < totalTickets; i++) {
             if(ticketMap[quizMap[_QuizId].tickets[i]].betIndex == _WinningInd){
@@ -187,23 +196,32 @@ contract MarketPlaceContract {
         require(quizMap[_QuizId].isEnded == false, "Quiz is already ended");
         require(_amt >= quizMap[_QuizId].minAmt && _amt <= quizMap[_QuizId].maxAmt, "Amount should be between min and max amount");
         uint256 totalAmount = quizMap[_QuizId].totalAmt;
+        if( totalAmount == 0) {
+            return 0; // No bets placed yet
+        }
         uint256 fee = totalAmount * 5 / 100;
         totalAmount -= fee;
-        uint256 reward = (_amt / quizMap[_QuizId].options[_betIndex]) * totalAmount;
+        uint256 betOnOption = quizMap[_QuizId].options[_betIndex];
+        if( betOnOption == 0) {
+            betOnOption = 1; // Avoid division by zero
+        }
+        uint256 reward = (_amt / betOnOption) * totalAmount;
         return reward;
     }
 
     //funciton for admin to withdraw amount from contract
     function withdraw(uint256 _amt) public onlyAdmin {
         require(_amt > 0, "Amount should be greater than 0");
+        require(_amt <= address(this).balance, "Insufficient balance");
+        require(_amt <= profit, "Amount should be less than profit");
         payable(admin).transfer(_amt);
+        profit -= _amt;
         emit Withdrawn(admin, _amt);
     }
     function withdrawAll() public onlyAdmin {
-        uint256 balance = address(this).balance;
-        require(balance > 0, "No balance to withdraw");
-        payable(admin).transfer(balance);
-        emit Withdrawn(admin, balance);
+        require(profit > 0, "No balance to withdraw");
+        payable(admin).transfer(profit);
+        emit Withdrawn(admin, profit);
     }
     function getContractBalance() public view returns (uint256) {
         return address(this).balance;
@@ -215,5 +233,8 @@ contract MarketPlaceContract {
     function rejectRequest(uint256 _QuizId) public onlyAdmin {
         require(quizMap[_QuizId].isApproved == false, "Quiz is already approved");
         quizMap[_QuizId].isApproved = false;
+    }
+    function getProfit() public view onlyAdmin returns (uint256) {
+        return profit;
     }
 }

@@ -2,6 +2,7 @@
 
 import AllPredictionsTable from "@/app/components/AllPredictionsTable";
 import DashboardCard from "@/app/components/DashboardCard";
+import AdminProfit from "../components/AdminProfit";
 import LineChartComponent from "@/app/components/LineChartComponent";
 import { PredictionTable } from "@/app/components/PredictionTable";
 import { UserTable } from "@/app/components/UserTable";
@@ -56,6 +57,11 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen overflow-y-auto  p-4 space-y-6" id="top">
+      <h1 className="text-3xl font-bold text-primaryBlue mb-6">Admin Dashboard</h1>
+      <div className="container mx-auto py-10">
+        <h1 className="text-2xl font-bold mb-6">Admin Profit</h1>
+        <AdminProfit />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <DashboardCard title="Total users" value={totalUsers} />
         <DashboardCard title="Total predictions" value={totalPredictions} />
