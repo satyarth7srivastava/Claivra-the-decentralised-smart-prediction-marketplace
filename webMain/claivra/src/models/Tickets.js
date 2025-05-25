@@ -10,6 +10,10 @@ const TicketSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    ownerAddress: {
+        type: String,
+        required: true
+    },
     betAmount: {
         type: Number,
         required: true
@@ -18,6 +22,16 @@ const TicketSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    isWidthdrawn:{
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    winAmount:{
+        type: Number,
+        required: true,
+        default: 0
+    }
 });
 
 

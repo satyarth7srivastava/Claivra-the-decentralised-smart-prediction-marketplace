@@ -13,6 +13,8 @@ contract MarketPlaceContract {
         uint256 amt;
         uint256 quizId;
         uint256 betIndex;
+        bool isWithdrawn;
+        uint256 winAmt;
     }
     //map list for tickets
     mapping(uint256 => Ticket) public ticketMap;
@@ -118,15 +120,11 @@ contract MarketPlaceContract {
             if(ticketMap[quizMap[_QuizId].tickets[i]].betIndex == _WinningInd){
                 uint256 reward = generateReward(quizMap[_QuizId].tickets[i], totalAmount, quizMap[_QuizId].options[_WinningInd]);
                 payable(ticketMap[quizMap[_QuizId].tickets[i]].owner).transfer(reward);
+                //setting ticket as withdrawn
+                ticketMap[quizMap[_QuizId].tickets[i]].isWithdrawn = true;
+                ticketMap[quizMap[_QuizId].tickets[i]].winAmt = reward;
+                buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].totalAmt += reward;
                 emit Withdrawn(ticketMap[quizMap[_QuizId].tickets[i]].owner, reward);
-            }
-            //removing ticket from buyer's list
-            for(uint256 j = 0; j < buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets.length; j++){
-                if(buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[j] == quizMap[_QuizId].tickets[i]){
-                    buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[j] = buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets[buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets.length - 1];
-                    buyerMap[ticketMap[quizMap[_QuizId].tickets[i]].owner].tickets.pop();
-                    break;
-                }
             }
         }
     }
@@ -142,7 +140,8 @@ contract MarketPlaceContract {
         uint256 Date = block.timestamp;
         uint256 iD = Date + totalTickets;
 
-        Ticket memory newTicket = Ticket(iD, msg.sender, msg.value, _QuizId, betIndex);
+
+        Ticket memory newTicket = Ticket(iD, msg.sender, msg.value, _QuizId, betIndex, false, 0);
         ticketMap[iD] = newTicket;
         quizMap[_QuizId].tickets.push(iD);
         buyerMap[msg.sender].tickets.push(iD);
