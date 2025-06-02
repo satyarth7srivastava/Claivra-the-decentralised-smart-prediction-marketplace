@@ -36,13 +36,23 @@ const getWinning = async (ID: number, betId: number, betAmount: number) => {
     console.log("Bet Amount:", betAmount);
     console.log("Quiz ID:", ID);
     const winning = await contract.getPredictedWinAmount(ID, betId, betAmount);
+    console.log("Predicted winning amount:", winning);
     return winning;
 }
 
 const handleBuyNow = async (betAmount: number, quizID: number, betId: number) => {
     const contract = await getContract();
-    const tx = await contract.buyTicket(quizID, betId,{value: betAmount});
+    const tx = await contract.buyTicket(quizID, betId, { value: betAmount });
+    const receipt = await tx.wait();
+    const myEvent = await contract.queryFilter(contract.filters.TicketBought(), receipt?.blockNumber, receipt?.blockNumber);
+    console.log("Event data:", myEvent);
+    console.log("Ticket ID: ", myEvent[0].args[0]);
+    console.log("Transaction receipt:", receipt);
     console.log("Transaction:", tx);
+
+    //testing if the ID is correct or not
+    const ticket = await contract.getTicket(myEvent[0].args[0]);
+    console.log("Ticket details:", ticket);
     return tx;
 }
 

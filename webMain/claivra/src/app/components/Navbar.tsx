@@ -4,18 +4,48 @@ import { Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { signOut } from "next-auth/react";
+import { isWallet } from "../bc-utils/utils";
 
 const Navbar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+    const handleConnect = async () => {
+        try {
+            // if not loggeg in push to login page
+            if (!isAuthenticated) {
+                router.push("/login");
+                return;
+            }
+
+            const walletRes = await isWallet();
+            setIsWalletConnected(walletRes);
+            if (!walletRes) {
+                // Logic to connect wallet
+                if(typeof window.ethereum === "undefined"){
+                    alert("Please install a wallet extension like MetaMask to connect.");
+                }
+                else {
+                    // Assuming you have a function to connect the wallet
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    setIsWalletConnected(true);
+                }
+            }
+        } catch (error) {
+            console.error("Error connecting wallet:", error);
+        }
+    }
 
     useEffect(() => {
       const checkAuth = async () => {
         try {
           const response = await axios.get("/api/auth/check-auth");
           setIsAuthenticated(response.data.isAuthenticated);
+          const walletRes = await isWallet();
+          setIsWalletConnected(walletRes);
         } catch (error) {
           console.error("Error checking auth:", error);
         } finally {
@@ -41,6 +71,20 @@ const Navbar: React.FC = () => {
 
     return (
         <nav className=" border-[#6f6f6b] border-b ">
+            {!isWalletConnected && (
+                <div className="bg-primaryBlue text-line1 text-center py-2">
+                    <p className="text-sm">Connect your wallet to start betting</p>
+                    <button
+                        className="bg-line1 text-primaryBlue px-4 py-2 rounded-md mt-2"
+                        onClick={() => {
+                            handleConnect();
+                            setIsOpen(false); // Close the mobile menu after connecting
+                        }}
+                    >
+                        Connect Wallet
+                    </button>
+                </div>
+            )}
             <div className="flex justify-between items-center px-6 py-4">
                 {/* Logo */}
                 <img src="/logo-dark.png" className="object-scale-down" height={16} width={120} />
