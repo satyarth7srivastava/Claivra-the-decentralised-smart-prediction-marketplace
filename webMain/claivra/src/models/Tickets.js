@@ -6,7 +6,7 @@ const TicketSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    quizeID: {
+    quizID: {
         type: String,
         required: true
     },
@@ -22,12 +22,12 @@ const TicketSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    isWidthdrawn:{
+    isWidthdrawn: {
         type: Boolean,
         required: true,
         default: false
     },
-    winAmount:{
+    winAmount: {
         type: Number,
         required: true,
         default: 0
