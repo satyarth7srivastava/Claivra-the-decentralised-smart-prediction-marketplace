@@ -61,7 +61,7 @@ async function POST(req: NextRequest, res: NextResponse): Promise<NextResponse> 
             username,
             password: hashPassword,
             role,
-            walletID: wallerAddress,
+            walletID: wallerAddress.toLowerCase(),
         });
         newUser.save();
 

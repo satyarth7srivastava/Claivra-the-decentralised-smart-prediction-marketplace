@@ -12,6 +12,8 @@ import { getContract } from "@/app/bc-utils/utils";
 
 //importing temprary image 
 import quizImage from "@/../public/trump.png";
+import { ethers } from "ethers";
+import { toast } from "sonner";
 
 interface QuizOption {
     optionID: number;
@@ -30,31 +32,6 @@ interface Quiz {
     approvalStatus: 'pending' | 'approved' | 'rejected';
 }
 
-const getWinning = async (ID: number, betId: number, betAmount: number) => {
-    const contract = await getContract();
-    console.log("Bet ID:", betId);
-    console.log("Bet Amount:", betAmount);
-    console.log("Quiz ID:", ID);
-    const winning = await contract.getPredictedWinAmount(ID, betId, betAmount);
-    console.log("Predicted winning amount:", winning);
-    return winning;
-}
-
-const handleBuyNow = async (betAmount: number, quizID: number, betId: number) => {
-    const contract = await getContract();
-    const tx = await contract.buyTicket(quizID, betId, { value: betAmount });
-    const receipt = await tx.wait();
-    const myEvent = await contract.queryFilter(contract.filters.TicketBought(), receipt?.blockNumber, receipt?.blockNumber);
-    console.log("Event data:", myEvent);
-    console.log("Ticket ID: ", myEvent[0].args[0]);
-    console.log("Transaction receipt:", receipt);
-    console.log("Transaction:", tx);
-
-    //testing if the ID is correct or not
-    const ticket = await contract.getTicket(myEvent[0].args[0]);
-    console.log("Ticket details:", ticket);
-    return tx;
-}
 
 
 
@@ -62,9 +39,57 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
     const [betAmount, setBetAmount] = useState(0);
     const [quizID, setQuizID] = useState(0);
     const [betId, setBetId] = useState("");
-    const [winning, setWinning] = useState("");
+    const [winning, setWinning] = useState(0);
     const [event, setEvent] = useState<Quiz>(); // Replace 'any' with your event type
     const [isLoading, setIsLoading] = useState(true);
+
+
+    const getWinning = async (ID: number, betId: number, betAmount: number) => {
+        const contract = await getContract();
+        console.log("Bet ID:", betId);
+        console.log("Bet Amount:", betAmount);
+        console.log("Quiz ID:", ID);
+        const winning = await contract.getPredictedWinAmount(ID, betId, betAmount);
+        console.log("Predicted winning amount:", winning);
+        return winning;
+    }
+
+    const handleBuyNow = async (betAmount: number, quizID: number, betId: number) => {
+
+        //TODO: Build logic
+        const contract = await getContract();
+        const tx = await contract.buyTicket(quizID, betId, { value: betAmount });
+        const receipt = await tx.wait();
+        const myEvent = await contract.queryFilter(contract.filters.TicketBought(), receipt?.blockNumber, receipt?.blockNumber);
+        const ticket = await myEvent[0].args[0]; // this is the ticket ID
+
+        const signerAddress = await window.ethereum.request({ method: 'eth_requestAccounts' })
+            .then((accounts: string[]) => accounts[0])
+            .catch((error: any) => {
+                console.error("Error fetching signer address:", error);
+                return "";
+            });
+        console.log("Signer Address:", signerAddress);
+        const ticketID = ticket.toString();
+
+        const res = await axios.post('../api/tickets/create', {
+            ticketID: ticketID,
+            quizID: quizID,
+            walletID: signerAddress,
+            betId: betId,
+            betAmount: betAmount,
+            winning: winning
+        })
+        console.log("Response from ticket creation:", res.data);
+        
+        if (res.status === 201) {
+            console.log("Ticket created successfully:", res.data);
+            toast.success("Ticket purchased successfully!");
+        } else {
+            console.error("Failed to create ticket:", res.data);
+            toast.error("Failed to purchase ticket.");
+        }
+    }
 
 
     const generatePredictedWinAmount = async () => {
@@ -75,7 +100,8 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
         try {
             const winAmount = await getWinning(quizID, Number(betId), betAmount);
             console.log("Predicted winning amount:", winAmount);
-            setWinning(winAmount.toString());
+            ethers.parseEther(winAmount.toString());
+            setWinning(Number(ethers.formatEther(winAmount)));
         } catch (error) {
             console.error("Error fetching winning amount:", error);
         }
@@ -180,10 +206,10 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                         </div>
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => handleBuyNow(betAmount, quizID, Number(betId))}
                         disabled={betAmount <= 0}
-                    className="bg-primaryBlue text-primaryWhite py-2.5 px-8 rounded-md my-8">
+                        className="bg-primaryBlue text-primaryWhite py-2.5 px-8 rounded-md my-8">
                         Buy Now
                     </button>
                 </div>
