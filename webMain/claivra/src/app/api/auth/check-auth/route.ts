@@ -2,12 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { getServerSession } from "next-auth";
 import { NEXT_AUTH_CONFIG } from "@/app/lib/auth";
+import connect from "@/config/connect";
+import User from "@/models/User";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(NEXT_AUTH_CONFIG);
     if (session?.user) {
-      return NextResponse.json({ isAuthenticated: true });
+      await connect();
+      const email = session.user.email;
+      const user = await User.findOne({
+        email: email,
+      })
+      if (!user) {
+        return NextResponse.json({ isAuthenticated: false }, { status: 200 });
+      }
+      const isWalletConnected = (user.walletID !== "")? true : false;
+      console.log("User found:", user);
+      console.log("Is wallet connected:", isWalletConnected);
+      return NextResponse.json({ isAuthenticated: true, isWalletConnected: isWalletConnected });
     }
 
     const cookie = req.headers.get("cookie");
