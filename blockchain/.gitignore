@@ -1,6 +1,9 @@
 node_modules
 .env
 
+# lock files
+package-lock.json
+
 # Hardhat files
 /cache
 /artifacts
