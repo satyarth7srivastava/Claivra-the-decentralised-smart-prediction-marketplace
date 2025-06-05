@@ -34,7 +34,17 @@ export async function GET(req: NextRequest) {
     }
 
     jwt.verify(token, process.env.JWT_SECRET!);
-    return NextResponse.json({ isAuthenticated: true });
+    //getting user id from token
+    const decodedToken = jwt.decode(token) as { userId: string };
+    if (!decodedToken || !decodedToken.userId) {
+      return NextResponse.json({ isAuthenticated: false }, { status: 200 });
+    }
+    const user = await User.findById(decodedToken.userId);
+    if (!user) {
+      return NextResponse.json({ isAuthenticated: false }, { status: 200 });
+    }
+    const isWalletConnected = (user.walletID !== "")? true : false;
+    return NextResponse.json({ isAuthenticated: true, isWalletConnected: isWalletConnected });
   } catch (error) {
     console.error("JWT Verification Error:", error);
     return NextResponse.json({ isAuthenticated: false }, { status: 401 });

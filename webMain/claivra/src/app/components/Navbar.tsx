@@ -46,6 +46,7 @@ const Navbar: React.FC = () => {
     const checkAuth = async () => {
       try {
         const response = await axios.get("/api/auth/check-auth");
+        console.log("Auth check response:", response.data);
         setIsAuthenticated(response.data.isAuthenticated);
         const walletRes = await isWallet();
         const isWalletConnected = response.data.isWalletConnected && walletRes;
@@ -75,7 +76,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className=" border-[#6f6f6b] border-b ">
-      {!isWalletConnected && (
+      {(!isWalletConnected && isAuthenticated) && (
         <div className="bg-primaryBlue text-line1 text-center py-2">
           <p className="text-sm">Connect your wallet to start betting</p>
           <button
