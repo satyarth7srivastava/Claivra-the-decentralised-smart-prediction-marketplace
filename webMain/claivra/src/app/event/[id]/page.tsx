@@ -139,27 +139,27 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
     return (
         <div>
             <Navbar />
-            <div className="flex gap-10">
+            <div className="flex">
                 {/* Left div */}
-                <div className="flex flex-col w-8/12 px-16 pt-6">
-                    <div className="flex gap-8 justify-start pb-14 items-center">
-                        <img src={quizImage.src} alt="event" width={80} className="rounded-full" />
+                <div className="flex flex-col w-9/12 pl-24 pt-10">
+                    <div className="flex gap-6 justify-start pb-14 items-center">
+                        <img src={quizImage.src} alt="event" width={90} className="rounded-full" />
                         <h1 className="text-secBlack text-2xl">{event?.quizName}</h1>
                     </div>
-                    <div className="mx-12">
-                        <img src="/graph.png" className="rounded-md" />
-                        <div className="flex gap-4 w-full mb-20 mt-6">
+                    <div className="mx-14 ">
+                        <img src="/graph.png" className=" border-2 rounded-md" />
+                        <div className="flex gap-4 w-full  mb-14 mt-10">
                             {event?.quizOptions.map((quizOptions, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setBetId(index.toString())}
-                                    className={(betId === index.toString() ? "bg-primaryBlue text-primaryWhite" : "bg-primaryWhite text-primaryBlack") + " flex items-center gap-2 px-4 py-2 rounded-md border border-secBlack hover:bg-primaryBlue hover:text-primaryWhite transition-all duration-300"}
+                                    className={(betId === index.toString() ? "bg-primaryBlue text-primaryWhite" : "bg-primaryWhite text-primaryBlack") + " flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-secBlack hover:bg-primaryBlue hover:text-primaryWhite transition-all duration-300 w-1/2 "}
                                 >
                                     {quizOptions.optionText}
                                 </button>
                             ))}
                         </div>
-                        <div className="flex gap-12 my-20">
+                        <div className="flex gap-12 mb-16">
                             <input
                                 type="text"
                                 placeholder="Market Summary"
@@ -171,12 +171,12 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                             </button>
                         </div>
 
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-6 ">
                             <div>
                                 <h1 className="text-primaryBlue text-3xl font-bold">Rules</h1>
                                 <div className="border border-t-line1 w-full mt-2 "></div>
                             </div>
-                            <div className="flex flex-col gap-3 mt-4 mb-32">
+                            <div className="flex flex-col gap-3 mt-4 mb-24">
                                 <span>
                                     This market will resolve to “Yes” if the conditions specified in
                                     the event are met.
@@ -189,11 +189,11 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                     </div>
                 </div>
                 {/* Right div */}
-                <div className="flex flex-col gap-4 my-20 rounded-xl py-10 px-6 bg-line1 h-[615px]">
-                    <div className="flex flex-col gap-1">
+                <div className="flex flex-col justify-between rounded-2xl p-6 bg-line1 shadow-lg h-fit min-w-[300px] max-w-[340px] mt-10">
+                    <div className="flex flex-col gap-2">
                         <label className="text-sm text-line2">Your Bet Amount</label>
                         <input
-                            className="py-1.5 bg-primaryWhite px-4 rounded-sm"
+                            className="py-2 bg-primaryWhite px-4 rounded-md border border-line2"
                             value={betAmount}
                             onChange={(e) => setBetAmount(Number(e.target.value))}
                         />
@@ -209,7 +209,7 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                     <button
                         onClick={() => handleBuyNow(betAmount, quizID, Number(betId))}
                         disabled={betAmount <= 0}
-                        className="bg-primaryBlue text-primaryWhite py-2.5 px-8 rounded-md my-8">
+                        className="bg-primaryBlue text-primaryWhite py-2.5 px-8 rounded-md mt-10">
                         Buy Now
                     </button>
                 </div>

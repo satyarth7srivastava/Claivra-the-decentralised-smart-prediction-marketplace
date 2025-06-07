@@ -77,19 +77,28 @@ const Navbar: React.FC = () => {
   return (
     <nav className=" border-[#6f6f6b] border-b ">
       {(!isWalletConnected && isAuthenticated) && (
-        <div className="bg-primaryBlue text-line1 text-center py-2">
-          <p className="text-sm">Connect your wallet to start betting</p>
-          <button
-            className="bg-line1 text-primaryBlue px-4 py-2 rounded-md mt-2"
-            onClick={() => {
-              handleConnect();
-              setIsOpen(false); // Close the mobile menu after connecting
-            }}
-          >
-            Connect Wallet
-          </button>
+        <div className="flex justify-center">
+          <div className="fixed top-6 z-50  transform -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] 2xl:w-[30%] 3xl:w-[25%] bg-white border border-blue-300 shadow-xl rounded-xl px-6 py-4 animate-fade-in">
+    <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col">
+        <p className="text-primaryBlue font-semibold text-base">Connect Your Wallet</p>
+        <p className="text-sm text-gray-600">To start betting, please connect your wallet.</p>
+      </div>
+      <button
+        onClick={() => {
+          handleConnect();
+          setIsOpen(false);
+        }}
+        className="mt-2 bg-primaryBlue hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition"
+      >
+        Connect
+      </button>
+    </div>
+  </div>
         </div>
-      )}
+)}
+
+
       <div className="flex justify-between items-center px-6 py-4">
         {/* Logo */}
         <img src="/logo-dark.png" className="object-scale-down" height={16} width={120} />

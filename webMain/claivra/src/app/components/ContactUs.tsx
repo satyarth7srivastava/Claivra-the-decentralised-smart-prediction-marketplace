@@ -36,7 +36,7 @@ const ContactUs: React.FC = () => {
         </div>
 
         {/* Map */}
-        <div className="w-full md:w-1/2"> 
+        <div className="w-full md:w-1/2 z-0"> 
           <Map />
         </div>
       </div>
