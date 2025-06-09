@@ -22,7 +22,7 @@ const HomeMarket: React.FC<HomeMarketProps> = ({ query }) => {
 
     const fetchPredictions = async () => {
       try {
-        const response = await axios.get("/api/quizes/getAllQuizes");
+        const response = await axios.get("/api/quizes/getAllApprovedQuizes");
         const quizzes = response.data;
 
         const quizzesWithImages = await Promise.all(
