@@ -6,6 +6,10 @@ import axios from "axios";
 import { signOut } from "next-auth/react";
 import { isWallet } from "../bc-utils/utils";
 import { ethers } from "ethers";
+import { ErrorDecoder } from "ethers-decode-error";
+import { toast } from "sonner";
+import { getContract } from "../bc-utils/utils";
+import { get } from "http";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,9 +34,25 @@ const Navbar: React.FC = () => {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner(0);
         const address = await signer.getAddress();
-        console.log("Connected wallet address:", address);
+        try {
+          const contract = await getContract();
+          const tx = await contract.registerAsBuyer();
+          await tx.wait();
+          toast.success("Successfully registered as a buyer.");
+        } catch (error) {
+          const decoder = ErrorDecoder.create();
+          const decodedError = await decoder.decode(error);
+          const {reason} = decodedError;
+          if (reason === "User rejected the request.") {
+            toast.error("Wallet connection request was rejected by the user.");
+            return;
+          }else{
+            toast.error("An error occurred while registering to the wallet: " + reason);
+            return;
+          }
+        }
         const res = await axios.post("api/auth/walletConnect", {
-          walletID: address
+          walletID: address.toLowerCase()
         });
         setIsWalletConnected(true);
       }
