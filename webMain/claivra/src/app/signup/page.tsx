@@ -58,7 +58,7 @@ const SignupPage: React.FC = () => {
       const signer = await provider.getSigner(0);
       const address = await signer.getAddress();
       setIsWalletConnected(true);
-      setWalletAddress(address);
+      setWalletAddress(address.toLowerCase());
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
     } finally {
