@@ -4,9 +4,9 @@ import { Minus, Plus, Star } from "lucide-react";
 import React from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { predictions } from "../../lib/data";
 import { useState } from "react";
 import axios from "axios";
+import { ErrorDecoder } from 'ethers-decode-error';
 
 import { getContract } from "@/app/bc-utils/utils";
 
@@ -45,49 +45,78 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
 
 
     const getWinning = async (ID: number, betId: number, betAmount: number) => {
-        const contract = await getContract();
-        console.log("Bet ID:", betId);
-        console.log("Bet Amount:", betAmount);
-        console.log("Quiz ID:", ID);
-        const winning = await contract.getPredictedWinAmount(ID, betId, betAmount);
-        console.log("Predicted winning amount:", winning);
-        return winning;
+        try {
+            const contract = await getContract();
+            const winning = await contract.getPredictedWinAmount(ID, betId, betAmount);
+            return winning;
+        } catch (err) {
+            const errorDecoder = ErrorDecoder.create();
+            const decodedError = await errorDecoder.decode(err);
+            if (decodedError) {
+                console.error("Decoded error:", decodedError);
+                const { reason } = decodedError;
+                toast.error(`Error: ${reason}`);
+            } else {
+                console.error("Error during transaction:", err);
+                toast.error("An error occurred while calculating the winning amount.");
+            }
+        } finally{
+            setWinning(0); // Reset winning amount in case of error
+        }
     }
 
     const handleBuyNow = async (betAmount: number, quizID: number, betId: number) => {
+        try {
+            const contract = await getContract();
+            let ticketID = "";
+            try {
+                const tx = await contract.buyTicket(quizID, betId, { value: betAmount });
+                const receipt = await tx.wait();
+                const myEvent = await contract.queryFilter(
+                    contract.filters.TicketBought(),
+                    receipt?.blockNumber,
+                    receipt?.blockNumber
+                );
+                const ticket = await myEvent[0].args[0]; // this is the ticket ID
+                ticketID = ticket.toString();
+            } catch (txError) {
+                const errorDecoder = ErrorDecoder.create()
+                const decodedError = await errorDecoder.decode(txError);
+                if (decodedError) {
+                    console.error("Decoded error:", decodedError);
+                    const { reason } = decodedError;
+                    toast.error(`Transaction failed: ${reason}`);
+                } else {
+                    console.error("Transaction error:", txError);
+                    toast.error("Transaction failed. Please try again.");
+                }
+                console.error("Error during transaction:", txError);
+                return;
+            }
 
-        //TODO: Build logic
-        const contract = await getContract();
-        const tx = await contract.buyTicket(quizID, betId, { value: betAmount });
-        const receipt = await tx.wait();
-        const myEvent = await contract.queryFilter(contract.filters.TicketBought(), receipt?.blockNumber, receipt?.blockNumber);
-        const ticket = await myEvent[0].args[0]; // this is the ticket ID
+            const signerAddress = await window.ethereum.request({ method: 'eth_requestAccounts' })
+                .then((accounts: string[]) => accounts[0])
+                .catch((error: any) => {
+                    console.error("Error fetching signer address:", error);
+                    return "";
+                });
 
-        const signerAddress = await window.ethereum.request({ method: 'eth_requestAccounts' })
-            .then((accounts: string[]) => accounts[0])
-            .catch((error: any) => {
-                console.error("Error fetching signer address:", error);
-                return "";
+            const res = await axios.post('../api/tickets/create', {
+                ticketID: ticketID,
+                quizID: quizID,
+                walletID: signerAddress,
+                betId: betId,
+                betAmount: betAmount,
+                winning: winning
             });
-        console.log("Signer Address:", signerAddress);
-        const ticketID = ticket.toString();
-
-        const res = await axios.post('../api/tickets/create', {
-            ticketID: ticketID,
-            quizID: quizID,
-            walletID: signerAddress,
-            betId: betId,
-            betAmount: betAmount,
-            winning: winning
-        })
-        console.log("Response from ticket creation:", res.data);
-        
-        if (res.status === 201) {
-            console.log("Ticket created successfully:", res.data);
-            toast.success("Ticket purchased successfully!");
-        } else {
-            console.error("Failed to create ticket:", res.data);
-            toast.error("Failed to purchase ticket.");
+            if (res.status === 201) {
+                toast.success("Ticket purchased successfully!");
+            } else {
+                toast.error("Failed to purchase ticket.");
+            }
+        } catch (error) {
+            console.error("Error in handleBuyNow:", error);
+            toast.error("An error occurred while purchasing the ticket.");
         }
     }
 
