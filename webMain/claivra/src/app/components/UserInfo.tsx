@@ -1,15 +1,13 @@
-"use client"
-import quizImage from "@/../public/trump.png";
+"use client";
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function UserInfo() {
+  const [user, setUser] = useState<any>(null);
+  const [copied, setCopied] = useState(false);
 
-    const [user, setUser] = useState<any>(null);
-    const [copied, setCopied] = useState(false);
-
-    
-    useEffect(() => {
+  useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await axios.get("/api/users/getUser", { withCredentials: true });
@@ -22,7 +20,7 @@ export default function UserInfo() {
     fetchUser();
   }, []);
 
-    const handleCopy = () => {
+  const handleCopy = () => {
     if (user?.walletID) {
       navigator.clipboard.writeText(user.walletID);
       setCopied(true);
@@ -30,14 +28,13 @@ export default function UserInfo() {
     }
   };
 
-
   return (
     <div className="border border-slate-300 py-6 px-4 rounded-3xl w-full">
       <div>
         <div className="h-auto px-4 md:px-20 pb-4 flex flex-col justify-center items-center gap-1">
           <img
-            src={quizImage.src}
-            alt="event"
+            src={`https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(user?.username || "User")}`}
+            alt="profile"
             width={65}
             className="rounded-full my-4"
           />

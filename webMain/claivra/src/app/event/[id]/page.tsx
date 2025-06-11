@@ -1,17 +1,13 @@
 "use client";
 
-import { Minus, Plus, Star } from "lucide-react";
-import React from "react";
+// import { Minus, Plus, Star } from "lucide-react";
+import React, { useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useState } from "react";
 import axios from "axios";
 import { ErrorDecoder } from 'ethers-decode-error';
-
 import { getContract } from "@/app/bc-utils/utils";
-
-//importing temprary image 
-import quizImage from "@/../public/trump.png";
 import { ethers } from "ethers";
 import { toast } from "sonner";
 
@@ -42,6 +38,33 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
     const [winning, setWinning] = useState(0);
     const [event, setEvent] = useState<Quiz>(); // Replace 'any' with your event type
     const [isLoading, setIsLoading] = useState(true);
+    const [imageUrl, setImageUrl] = useState("");
+
+useEffect(() => {
+  const fetchImage = async () => {
+    try {
+      const res = await axios.get("https://api.unsplash.com/search/photos", {
+        params: {
+          query: event?.quizName || "technology", 
+          orientation: "squarish",
+          page: 1,
+          per_page: 1,
+        },
+        headers: {
+          Authorization: `Client-ID ${process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`,
+        },
+      });
+      setImageUrl(res.data.results[0].urls.small);
+    } catch (err) {
+      console.error("Error fetching image from Unsplash:", err);
+    }
+  };
+
+  if (event?.quizName) {
+    fetchImage();
+  }
+}, [event?.quizName]);
+
 
 
     const getWinning = async (ID: number, betId: number, betAmount: number) => {
@@ -174,7 +197,7 @@ export default function Event({ params }: { params: Promise<{ id: string }> }) {
                 {/* Left div */}
                 <div className="flex flex-col w-9/12 pl-24 pt-10">
                     <div className="flex gap-6 justify-start pb-14 items-center">
-                        <img src={quizImage.src} alt="event" width={90} className="rounded-full" />
+                        <img src={imageUrl || "/fallback.png"} alt="event" width={90} className="rounded-full" />
                         <h1 className="text-secBlack text-2xl">{event?.quizName}</h1>
                     </div>
                     <div className="mx-14 ">
