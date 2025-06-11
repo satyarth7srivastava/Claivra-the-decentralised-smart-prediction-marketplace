@@ -85,7 +85,9 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get("/api/users/getUser", { withCredentials: true });
+        const res = await axios.get("/api/users/getUser", {
+          withCredentials: true,
+        });
         setUser(res.data.data);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -171,7 +173,9 @@ const Navbar: React.FC = () => {
           <div className="hidden lg:flex gap-6 relative">
             <div className="relative" ref={dropdownRef}>
               <img
-                src={`https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(user?.username || "User")}`}
+                src={`https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(
+                  user?.username || "User"
+                )}`}
                 alt="User"
                 width={40}
                 height={40}
@@ -179,23 +183,54 @@ const Navbar: React.FC = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
               />
               {showDropdown && (
-                <div className="absolute right-0 top-12 w-40 bg-white border border-gray-300 rounded-lg shadow-md z-50">
+                <div className="absolute right-0 top-12 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-50 animate-dropdownFade">
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="flex items-center w-full text-left px-4 py-3 gap-2 text-sm hover:bg-gray-100 transition"
                     onClick={() => {
-                      router.push("/buyer");
+                      if (user?.role === "Organizer")
+                        router.push("/organizer-dashboard");
+                      else if (user?.role === "Buyer") router.push("/buyer");
+                      else if (user?.role === "Admin") router.push("/admin");
                       setShowDropdown(false);
                     }}
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5.121 17.804A7.97 7.97 0 0012 20a7.97 7.97 0 006.879-2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
                     Profile
                   </button>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="flex items-center w-full text-left px-4 py-3 gap-2 text-sm hover:bg-gray-100 transition"
                     onClick={() => {
                       handleLogout();
                       setShowDropdown(false);
                     }}
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5"
+                      />
+                    </svg>
                     Logout
                   </button>
                 </div>
@@ -231,12 +266,24 @@ const Navbar: React.FC = () => {
           <a href="#">Create Prediction</a>
           <a href="#">Contact Us</a>
           {isAuthenticated ? (
-            <button
-              className="text-primaryBlack rounded-md w-full underline"
-              onClick={() => handleLogout()}
-            >
-              Logout
-            </button>
+            <>
+              <button
+                onClick={() => {
+                  if (user?.role === "Organizer")
+                    router.push("/organizer-dashboard");
+                  else if (user?.role === "Buyer") router.push("/buyer");
+                  else if (user?.role === "Admin") router.push("/admin");
+                }}
+              >
+                Profile
+              </button>
+              <button
+                className="text-primaryBlack rounded-md w-full underline"
+                onClick={() => handleLogout()}
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -260,3 +307,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+ 
