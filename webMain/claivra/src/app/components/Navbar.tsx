@@ -94,7 +94,9 @@ const Navbar: React.FC = () => {
       }
     };
 
-    fetchUser();
+    if(isAuthenticated){
+      fetchUser();
+    }
   }, []);
 
   useEffect(() => {
