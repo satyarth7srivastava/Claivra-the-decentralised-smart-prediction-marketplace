@@ -6,6 +6,8 @@ contract MarketPlaceContract {
     address private admin;
     uint256 private profit = 0;
     uint256 private constant ONE_ETH = 10**18;
+    //mapping for admin address
+    mapping(address => bool) public isAdminMap;
     //Variables and structs
     struct Ticket {
         uint256 id;
@@ -52,6 +54,7 @@ contract MarketPlaceContract {
 
     constructor() {
         admin = msg.sender;
+        isAdminMap[admin] = true; // Set the contract deployer as admin
     }
 
     //Modifiers
@@ -65,6 +68,10 @@ contract MarketPlaceContract {
     }
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only Admin can call this function");
+        _;
+    }
+    modifier AdminRights() {
+        require(isAdminMap[msg.sender], "Only Admin can call this function");
         _;
     }
 
@@ -222,18 +229,23 @@ contract MarketPlaceContract {
         payable(admin).transfer(profit);
         emit Withdrawn(admin, profit);
     }
-    function getContractBalance() public view returns (uint256) {
-        return address(this).balance;
+
+    //TODO: Add function to register as admin with some security checks
+    function registerAsAdmin() public{
+        require(!isAdminMap[msg.sender], "Already registered as Admin");
+        isAdminMap[msg.sender] = true;
     }
-    function appvoreRequest(uint256 _QuizId) public onlyAdmin {
+
+    //Functions for admin to approve or reject quiz requests
+    function appvoreRequest(uint256 _QuizId) public AdminRights {
         require(quizMap[_QuizId].isApproved == false, "Quiz is already approved");
         quizMap[_QuizId].isApproved = true;
     }
-    function rejectRequest(uint256 _QuizId) public onlyAdmin {
+    function rejectRequest(uint256 _QuizId) public AdminRights {
         require(quizMap[_QuizId].isApproved == false, "Quiz is already approved");
         quizMap[_QuizId].isApproved = false;
     }
-    function getProfit() public view onlyAdmin returns (uint256) {
+    function getProfit() public view AdminRights returns (uint256) {
         return profit;
     }
 }

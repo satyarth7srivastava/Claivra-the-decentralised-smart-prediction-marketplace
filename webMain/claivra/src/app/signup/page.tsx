@@ -92,8 +92,13 @@ const SignupPage: React.FC = () => {
         var tx = null;
         if (role === "Organizer") {
           tx = await contract.registerAsSeller();
-        } else {
+        } else if(role === "Buyer"){
           tx = await contract.registerAsBuyer();
+        }else if(role === "Admin"){
+          tx = await contract.registerAsAdmin();
+        }else{
+          setErrorMessage("Invalid role selected. Please select a valid role.");
+          return;
         }
         if (tx == null) {
           setErrorMessage("Transaction failed. Please try again.");
@@ -197,6 +202,7 @@ const SignupPage: React.FC = () => {
             >
               <option value="Buyer">Buyer</option>
               <option value="Organizer">Organizer</option>
+              <option value="Admin">Admin</option>
             </select>
           </div>
 
@@ -208,9 +214,9 @@ const SignupPage: React.FC = () => {
 
           {errorMessage && <div className="text-red-500 text-sm mb-4">{errorMessage}</div>}
 
-          {/* <button type="submit" className="w-full py-2 bg-gray-500 hover:bg-blue-700 transition duration-200 text-white rounded-lg">
+          <button type="submit" className="w-full py-2 bg-gray-500 hover:bg-blue-700 transition duration-200 text-white rounded-lg">
             Continue
-          </button> */}
+          </button> 
         </form>
 
         <div className="text-center mt-6">

@@ -3,7 +3,6 @@
 import AllPredictionsTable from "@/app/components/AllPredictionsTable";
 import DashboardCard from "@/app/components/DashboardCard";
 import AdminProfit from "../components/AdminProfit";
-import LineChartComponent from "@/app/components/LineChartComponent";
 import { PredictionTable } from "@/app/components/PredictionTable";
 import { UserTable } from "@/app/components/UserTable";
 import { useState, useEffect } from "react";
@@ -12,44 +11,45 @@ import axios from "axios";
 
 const AdminDashboard = () => {
   const [predictions, setPredictions] = useState([]);
-  const [users, setUsers] =useState([]);
+  const [users, setUsers] = useState([]);
   const [admins, setAdmins] = useState([]);
 
-  const handleLogout = (userId: string)  : any => {
+  const handleLogout = (userId: string): any => {
     console.log(
       `User with ID ${userId} has been logged out from the parent component`
     );
   };
 
   useEffect(() => {
-  const fetchPredictions = async () => {
-    try {
-      const response = await axios.get("/api/quizes/getAllQuizes");
-      setPredictions(response.data);
-    } catch (error) {
-      console.error("Error fetching predictions:", error);
+
+    const fetchPredictions = async () => {
+      try {
+        const response = await axios.get("/api/quizes/getAllQuizes");
+        setPredictions(response.data);
+      } catch (error) {
+        console.error("Error fetching predictions:", error);
+      }
+    };
+
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("/api/users/getAllUsers");
+        const fetchedUsers = response.data;
+
+        const adminsList = fetchedUsers.filter((user: any) => user.role === "Admin");
+        const usersList = fetchedUsers.filter((user: any) => user.role === "Buyer" || user.role === "Organizer");
+
+        setAdmins(adminsList);
+        setUsers(usersList);
+
+      } catch (error) {
+        console.log("Error fetching data", error);
+      }
     }
-  };
 
-  const fetchUsers = async () => {
-    try { 
-      const response = await axios.get("/api/users/getAllUsers");
-      const fetchedUsers = response.data;
-
-      const adminsList = fetchedUsers.filter((user : any) => user.role === "Admin");
-      const usersList = fetchedUsers.filter((user:any) => user.role==="Buyer" || user.role === "Organizer");
-      
-      setAdmins(adminsList);
-      setUsers(usersList);
-
-    }catch(error){
-      console.log("Error fetching data", error);
-    }
-  }
-
-  fetchPredictions();
-  fetchUsers();
-}, []);
+    fetchPredictions();
+    fetchUsers();
+  }, []);
 
   const totalUsers = users.length + admins.length;
   const totalPredictions = predictions.length;
