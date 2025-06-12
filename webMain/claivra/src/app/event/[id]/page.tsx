@@ -124,8 +124,6 @@ useEffect(() => {
                     return "";
                 });
 
-            console.log("Hello from handleBuyNow");
-
             const res = await axios.post('../api/tickets/create', {
                 ticketID: ticketID,
                 quizID: quizID,

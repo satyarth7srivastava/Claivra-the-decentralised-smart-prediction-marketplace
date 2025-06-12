@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const TicketSchema = new mongoose.Schema({
+    email:{
+        type: String,
+        required: true,
+    },
     ticketID: {
         type: String,
         required: true,
