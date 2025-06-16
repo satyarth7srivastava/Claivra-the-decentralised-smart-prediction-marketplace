@@ -1,31 +1,51 @@
-import { NextResponse, NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
-// This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
-    // Check if the request is for the admin path
-    // if (request.nextUrl.pathname.startsWith('/admin')) {
-    //     // Check if the user is authenticated
-    //     const token = request.cookies.get('token');
-    //     const role = jwt.decode(token?.value || '') as { role?: string };
-    //     if (!token) {
-    //         // If not authenticated, redirect to the login page
-    //         return NextResponse.redirect(new URL('/login', request.url));
-    //     }
-    //     if (role?.role !== 'admin') {
-    //         // If authenticated but not an admin, redirect to the home page
-    //         return NextResponse.redirect(new URL('/', request.url));
-    //     }
+type Role = "Admin" | "Buyer" | "Organizer";
 
-    //     // If authenticated or not an admin path, continue with the request
-    //     return NextResponse.next();
-    // }
+const protectedRoutes: Record<string, Role[]> = {
+  "/admin": ["Admin"],
+  "/buyer": ["Buyer"],
+  "/organizer-dashboard": ["Organizer"],
+  "/" : ["Admin", "Buyer", "Organizer"],
+  "/event" : ["Admin", "Buyer", "Organizer"],
+  "/login" : ["Admin", "Buyer", "Organizer"],
+  "/signup" : ["Admin", "Buyer", "Organizer"],
+};
+
+interface JwtPayload {
+  role: Role;
+  [key: string]: any;
+}
+
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get("token")?.value;
+
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userRole = decoded.role;
+
+    const pathname = req.nextUrl.pathname;
+
+    for (const path of Object.keys(protectedRoutes)) {
+      if (pathname.startsWith(path)) {
+        const allowedRoles = protectedRoutes[path];
+        if (!allowedRoles.includes(userRole)) {
+          return NextResponse.redirect(new URL("/", req.url));
+        }
+      }
+    }
+
     return NextResponse.next();
+  } catch (error) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 }
 
 export const config = {
-    matcher: [
-        '/admin'
-    ]
-}
-
+  matcher: ["/admin/:path*", "/buyer/:path*", "/organizer-dashboard/:path*"],
+};

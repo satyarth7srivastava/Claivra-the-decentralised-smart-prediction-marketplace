@@ -189,7 +189,7 @@ const Navbar: React.FC = () => {
                     onClick={() => {
                       if (user?.role === "Organizer")
                         router.push("/organizer-dashboard");
-                      else if (user?.role === "Buyer") router.push("/buyer");
+                      else if (user?.role?.toLowerCase() === "buyer") router.push("/buyer");
                       else if (user?.role === "Admin") router.push("/admin");
                       setShowDropdown(false);
                     }}
@@ -271,7 +271,7 @@ const Navbar: React.FC = () => {
                 onClick={() => {
                   if (user?.role === "Organizer")
                     router.push("/organizer-dashboard");
-                  else if (user?.role === "Buyer") router.push("/buyer");
+                  else if (user?.role?.toLowerCase() === "buyer") router.push("/buyer");
                   else if (user?.role === "Admin") router.push("/admin");
                 }}
               >
