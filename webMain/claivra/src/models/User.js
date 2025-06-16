@@ -8,11 +8,11 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true, default: ' ' },
     role: { type: String, required: false, default: 'buyer' },
     isConnected: { type: Boolean, required: false, default: false },
-    walletID: { type: String, default: '' },
+    walletID: { type: String, default: '' , unique : true},
     tickets: { type: [String], default: [] },
     loginCookie: { type: String, default: '' },
     loginCookieExpire: { type: Date, default: Date.now }
-});
+}, {timestamps :true,});
 
 const User = mongoose.models.users || mongoose.model('users', UserSchema);
 export default User;
