@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import connect from "./config/connect";
 
 type Role = "Admin" | "Buyer" | "Organizer";
 
 const protectedRoutes: Record<string, Role[]> = {
   "/admin": ["Admin"],
-  "/buyer": ["Buyer"],
+  "/buyer": ["Buyer", "Admin", "Organizer"],
   "/organizer-dashboard": ["Organizer"],
   "/" : ["Admin", "Buyer", "Organizer"],
   "/event" : ["Admin", "Buyer", "Organizer"],
@@ -19,15 +20,27 @@ interface JwtPayload {
 }
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
+    const token = req.cookies.get("token")?.value;
+    console.log("SECRET:", process.env.JWT_SECRET);
+
+    console.log("Token : "+token);
 
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    const userRole = decoded.role;
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const decoded = jwt.decode(token) as JwtPayload;
+    console.log("Decoded:", decoded);
+
+    console.log("Role :"+ decoded.role );
+    if (!decoded.role) {
+        return NextResponse.redirect(new URL("/login", req.url));
+    }
+    
+
+    const userRole = (decoded.role.charAt(0).toUpperCase() + decoded.role.slice(1).toLowerCase()) as Role;
 
     const pathname = req.nextUrl.pathname;
 

@@ -68,7 +68,10 @@ async function POST(req: NextRequest, res: NextResponse): Promise<NextResponse> 
         console.log(newUser);
 
         const token = jwt.sign(
-            { userId: newUser._id },
+            {
+                userId: newUser._id,
+                role: newUser.role,
+            },
             process.env.JWT_SECRET!,
             { expiresIn: '7d' }
         );
