@@ -1,7 +1,8 @@
 "use client";
-// import { CalendarSearch, Star } from 'lucide-react';
+import axios from "axios";
+import { CalendarSearch, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
+import { useState } from "react";
 
 interface PredictionOption {
   optionID: number;
@@ -23,13 +24,32 @@ interface Prediction {
   imageUrl?: string;
 }
 
-export default function HomeCard({ 
-  quizID, quizName, minBetAmt, maxBetAmt, quizOptions , imageUrl
+export default function HomeCard({
+  quizID,
+  quizName,
+  minBetAmt,
+  maxBetAmt,
+  quizOptions,
+  imageUrl,
 }: Prediction) {
   const router = useRouter();
-//   const [star, setStar] = useState(false);
+  const [star, setStar] = useState(false);
 
-  const totalBet = quizOptions.reduce((sum, option) => sum + (option.totalBet ?? 0), 0);
+  const toggleFavourite = async () => {
+    try {
+      const res = await axios.post("/api/users/setFavourite", { quizID });
+      if (res.data?.updated) {
+        setStar(res.data.isFavourite);
+      }
+    } catch (err) {
+      console.error("Failed to toggle favourite:", err);
+    }
+  };
+
+  const totalBet = quizOptions.reduce(
+    (sum, option) => sum + (option.totalBet ?? 0),
+    0
+  );
 
   const handleOnClick = () => {
     router.push(`/event/${quizID}`);
@@ -42,19 +62,34 @@ export default function HomeCard({
       onClick={handleOnClick}
     >
       <div className="px-6 flex gap-8 justify-start pt-5 pb-10 items-center">
-        <img src={imageUrl || "/default.jpg"} alt={quizName} width={68} className="rounded-full" />
+        <img
+          src={imageUrl || "/default.jpg"}
+          alt={quizName}
+          width={68}
+          className="rounded-full"
+        />
         <h1 className="text-secBlack max-w-64 text-base">{quizName}</h1>
       </div>
 
       <div className="px-4 pb-4">
         <div className="flex justify-between items-center mx-2">
-          {/* <button onClick={(e) => { e.stopPropagation(); setStar(!star); }} className="transition-all duration-300">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavourite();
+            }}
+            className="transition-all duration-300"
+          >
             <Star
               size={24}
               strokeWidth={1.7}
-              className={star ? "text-yellow-400 fill-yellow-400 opacity-80" : "text-grey"}
+              className={
+                star
+                  ? "text-yellow-400 fill-yellow-400 opacity-80"
+                  : "text-grey"
+              }
             />
-          </button> */}
+          </button>
 
           <div className="flex flex-col items-start gap-1">
             <h6 className="text-grey text-xs">Total Bet</h6>

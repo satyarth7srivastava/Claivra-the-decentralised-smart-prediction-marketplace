@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
     isConnected: { type: Boolean, required: false, default: false },
     walletID: { type: String, default: '' , unique : true},
     tickets: { type: [String], default: [] },
+    favourites : {type: [String], default: []},
     loginCookie: { type: String, default: '' },
     loginCookieExpire: { type: Date, default: Date.now }
 }, {timestamps :true,});
