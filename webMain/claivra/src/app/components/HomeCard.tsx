@@ -3,6 +3,7 @@ import axios from "axios";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast"; 
 
 interface PredictionOption {
   optionID: number;
@@ -34,15 +35,15 @@ export default function HomeCard({
 }: Prediction) {
   const router = useRouter();
   const [star, setStar] = useState(false);
-   
+
   useEffect(() => {
-    const checkFavourite = async() => {
+    const checkFavourite = async () => {
       try {
-        const res = await axios.get("api/users/getUser");
-        const favourites : string[] = res.data?.data?.favourites || [];
+        const res = await axios.get("/api/users/getUser");
+        const favourites: string[] = res.data?.data?.favourites || [];
         setStar(favourites.includes(quizID));
-      }catch(error){
-        console.log("Failed to fetch user favourites :" + error);
+      } catch (error) {
+        console.error("Failed to fetch user favourites:", error);
       }
     };
 
@@ -53,10 +54,15 @@ export default function HomeCard({
     try {
       const res = await axios.post("/api/users/setFavourite", { quizID });
       if (res.data?.updated) {
-        setStar(res.data.isFavourite);
+        const isNowFav = res.data.isFavourite;
+        setStar(isNowFav);
+        toast.success(
+          isNowFav ? "Added to favourites" : "Removed from favourites"
+        );
       }
     } catch (err) {
       console.error("Failed to toggle favourite:", err);
+      toast.error("Something went wrong.");
     }
   };
 
