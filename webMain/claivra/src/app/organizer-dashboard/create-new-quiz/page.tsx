@@ -14,6 +14,7 @@ export default function CreateNewQuiz() {
         quizDescription: "",
         minBetAmt: 0,
         maxBetAmt: 0,
+        organizerInvest: 0,
         quizOptions: [{ optionID: 1, optionText: "", totalBet: 0 }],
     });
 
@@ -65,15 +66,17 @@ export default function CreateNewQuiz() {
                 quizData.minBetAmt,
                 quizData.maxBetAmt,
                 quizID,
-                quizData.quizOptions.length
+                quizData.quizOptions.length,
+                quizData.organizerInvest,
+                {value : quizData.organizerInvest}
             );
             await tx.wait();
-            
+
             console.log("Transaction successful:", tx);
             console.log("Quiz created successfully:", response.data);
             alert("Quiz created successfully!");
         } catch (error) {
-            console.error("Error creating quiz:", error);
+            console.log("Error creating quiz:", error);
             alert("Failed to create quiz. Please try again.");
         }
     };
@@ -117,6 +120,15 @@ export default function CreateNewQuiz() {
                             className="w-full py-2 px-4 rounded-md border border-line1"
                             value={quizData.maxBetAmt}
                             onChange={(e) => handleInputChange("maxBetAmt", e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm text-line2">Investment</label>
+                        <input
+                            type="number"
+                            className="w-full py-2 px-4 rounded-md border border-line1"
+                            value={quizData.organizerInvest}
+                            onChange={(e) => handleInputChange("organizerInvest", e.target.value)}
                         />
                     </div>
                     <div>
