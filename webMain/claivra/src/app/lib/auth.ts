@@ -62,7 +62,7 @@ export const NEXT_AUTH_CONFIG = {
           const username = `${baseUsername}${randomSuffix}`;
 
           console.log("reached 4");
-          console.log(user.email, user.name);
+          console.log(user.email, user.name, user.role);
           const newUser = await User.create({
             email : user.email,
             fullName : user.name,
