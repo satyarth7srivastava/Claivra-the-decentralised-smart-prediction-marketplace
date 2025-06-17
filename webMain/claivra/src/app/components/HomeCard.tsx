@@ -1,8 +1,8 @@
 "use client";
 import axios from "axios";
-import { CalendarSearch, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface PredictionOption {
   optionID: number;
@@ -34,6 +34,20 @@ export default function HomeCard({
 }: Prediction) {
   const router = useRouter();
   const [star, setStar] = useState(false);
+   
+  useEffect(() => {
+    const checkFavourite = async() => {
+      try {
+        const res = await axios.get("api/users/getUser");
+        const favourites : string[] = res.data?.data?.favourites || [];
+        setStar(favourites.includes(quizID));
+      }catch(error){
+        console.log("Failed to fetch user favourites :" + error);
+      }
+    };
+
+    checkFavourite();
+  }, [quizID]);
 
   const toggleFavourite = async () => {
     try {
