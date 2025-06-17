@@ -2,6 +2,7 @@ import Navbar from "@/app/components/Navbar";
 import UserCard from "@/app/components/UserCards";
 import UserHistory from "@/app/components/UserHistory";
 import UserInfo from "@/app/components/UserInfo";
+import UserFavourites from "../components/UserFavourites";
 
 export default function Buyer() {
   return (
@@ -17,6 +18,9 @@ export default function Buyer() {
           </div>
           <div>
             <UserHistory />
+          </div>
+          <div className="py-2 md:py-4 lg:py-8">
+            <UserFavourites/> 
           </div>
         </div>
       </div>

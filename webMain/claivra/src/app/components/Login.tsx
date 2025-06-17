@@ -45,7 +45,7 @@ const Login: React.FC = () => {
         const role = res.data.data.role;
         if (role === "Admin") {
           router.push("/admin");
-        } else if (role === "Buyer") {
+        } else if (role === "Buyer" || "buyer") {
           router.push("/buyer");
         }
         else if (role === "Organizer") {

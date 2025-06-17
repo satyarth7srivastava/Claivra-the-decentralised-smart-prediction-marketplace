@@ -7,12 +7,34 @@ import { PredictionTable } from "@/app/components/PredictionTable";
 import { UserTable } from "@/app/components/UserTable";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 
 const AdminDashboard = () => {
   const [predictions, setPredictions] = useState([]);
   const [users, setUsers] = useState([]);
   const [admins, setAdmins] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkRole = async () => {
+      try {
+        const res = await axios.get("/api/users/getUser", {
+          withCredentials: true,
+        });
+        const role = res.data?.data?.role;
+
+        if (role !== "Admin") {
+          router.push("/");
+        }
+      } catch (err) {
+        router.push("/login");
+      }
+    };
+
+    checkRole();
+  }, []);
+
 
   const handleLogout = (userId: string): any => {
     console.log(

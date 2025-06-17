@@ -97,7 +97,7 @@ const Navbar: React.FC = () => {
     if(isAuthenticated){
       fetchUser();
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -175,10 +175,8 @@ const Navbar: React.FC = () => {
           <div className="hidden lg:flex gap-6 relative">
             <div className="relative" ref={dropdownRef}>
               <img
-                src={`https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(
-                  user?.username || "User"
-                )}`}
-                alt="User"
+                src={`https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(user?.username || "User")}`}
+                alt="profile"
                 width={40}
                 height={40}
                 className="rounded-full cursor-pointer"
@@ -191,7 +189,7 @@ const Navbar: React.FC = () => {
                     onClick={() => {
                       if (user?.role === "Organizer")
                         router.push("/organizer-dashboard");
-                      else if (user?.role === "Buyer") router.push("/buyer");
+                      else if (user?.role?.toLowerCase() === "buyer") router.push("/buyer");
                       else if (user?.role === "Admin") router.push("/admin");
                       setShowDropdown(false);
                     }}
@@ -273,7 +271,7 @@ const Navbar: React.FC = () => {
                 onClick={() => {
                   if (user?.role === "Organizer")
                     router.push("/organizer-dashboard");
-                  else if (user?.role === "Buyer") router.push("/buyer");
+                  else if (user?.role?.toLowerCase() === "buyer") router.push("/buyer");
                   else if (user?.role === "Admin") router.push("/admin");
                 }}
               >

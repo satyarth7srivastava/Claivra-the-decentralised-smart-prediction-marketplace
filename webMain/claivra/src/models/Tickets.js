@@ -36,7 +36,7 @@ const TicketSchema = new mongoose.Schema({
         required: true,
         default: 0
     }
-});
+},{ timestamps: true,});
 
 
 const Tickets = mongoose.models.tickets || mongoose.model('tickets', TicketSchema);
