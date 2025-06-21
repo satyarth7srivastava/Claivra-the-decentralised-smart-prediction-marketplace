@@ -40,12 +40,22 @@ const Navbar: React.FC = () => {
           const tx = await contract.registerAsBuyer();
           await tx.wait();
           toast.success("Successfully registered as a buyer.");
+
+          const res = await axios.post("api/auth/walletConnect", {
+            walletID: address.toLowerCase(),
+          });
+          setIsWalletConnected(true);
         } catch (error) {
           const decoder = ErrorDecoder.create();
           const decodedError = await decoder.decode(error);
           const { reason } = decodedError;
+          console.log("Decoded error:", reason);
           if (reason === "User rejected the request.") {
             toast.error("Wallet connection request was rejected by the user.");
+            return;
+          } else if (reason == "Already registered as Buyer") {
+            toast.error("Wallet is connected...");
+            setIsWalletConnected(true);
             return;
           } else {
             toast.error(
@@ -54,10 +64,6 @@ const Navbar: React.FC = () => {
             return;
           }
         }
-        const res = await axios.post("api/auth/walletConnect", {
-          walletID: address.toLowerCase(),
-        });
-        setIsWalletConnected(true);
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
@@ -94,7 +100,7 @@ const Navbar: React.FC = () => {
       }
     };
 
-    if(isAuthenticated){
+    if (isAuthenticated) {
       fetchUser();
     }
   }, [isAuthenticated]);
@@ -307,4 +313,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
- 
