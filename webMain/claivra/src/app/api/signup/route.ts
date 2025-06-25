@@ -16,7 +16,7 @@ const validatePassword = (password: string) => {
     return passwordRegex.test(password); //commenting for testing
 };
 
-async function POST(req: NextRequest, res: NextResponse): Promise<NextResponse> {
+async function POST(req: NextRequest): Promise<NextResponse> {
     const { fullName, email, password, role, wallerAddress } = await req.json();
 
     if (!fullName || !email || !password || !role || !wallerAddress) {
