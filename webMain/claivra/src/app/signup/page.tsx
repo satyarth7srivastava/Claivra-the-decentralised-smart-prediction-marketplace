@@ -18,8 +18,8 @@ const SignupPage: React.FC = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [role, setRole] = useState<string>("Buyer"); // Default role is Buyer
+  const [adminWallet, setAdminWallet] = useState<string>(""); // New admin wallet state
   const router = useRouter();
-
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -73,6 +73,12 @@ const SignupPage: React.FC = () => {
       return;
     }
 
+    // Validate admin wallet if role is Admin
+    if (role === "Admin" && !adminWallet.trim()) {
+      setErrorMessage("Admin wallet address is required for Admin role");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await axios.post("/api/signup", {
@@ -80,7 +86,7 @@ const SignupPage: React.FC = () => {
         fullName,
         password,
         role, // Include role in the signup payload
-        wallerAddress,
+        wallerAddress: role === "Admin" ? adminWallet : wallerAddress, // Include admin wallet if role is Admin
       });
 
       if (response.data.status === "success") {
@@ -95,7 +101,7 @@ const SignupPage: React.FC = () => {
         } else if(role === "Buyer"){
           tx = await contract.registerAsBuyer();
         }else if(role === "Admin"){
-          tx = await contract.registerAsAdmin();
+          tx = await contract.registerAsAdmin(adminWallet);
         }else{
           setErrorMessage("Invalid role selected. Please select a valid role.");
           return;
@@ -205,6 +211,21 @@ const SignupPage: React.FC = () => {
               <option value="Admin">Admin</option>
             </select>
           </div>
+
+          {/* Admin Wallet field - only shown when Admin role is selected */}
+          {role === "Admin" && (
+            <div className="mb-4">
+              <label className="block text-gray-700">Admin Wallet Address</label>
+              <input
+                type="text"
+                value={adminWallet}
+                onChange={(e) => setAdminWallet(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter admin wallet address"
+                required
+              />
+            </div>
+          )}
 
           <button className="w-full py-2 bg-yellow-600 hover:bg-blue-700 transition duration-200 text-white rounded-lg mb-4"
             onClick={handleConnect}

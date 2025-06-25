@@ -74,7 +74,6 @@ const Navbar: React.FC = () => {
     const checkAuth = async () => {
       try {
         const response = await axios.get("/api/auth/check-auth");
-        console.log("Auth check response:", response.data);
         setIsAuthenticated(response.data.isAuthenticated);
         const walletRes = await isWallet();
         const isWalletConnected = response.data.isWalletConnected && walletRes;

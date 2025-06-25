@@ -307,9 +307,8 @@ contract MarketPlaceContract {
     }
 
     //TODO: Add function to register as admin with some security checks
-    function registerAsAdmin() public {
-        require(!isAdminMap[msg.sender], "Already registered as Admin");
-        isAdminMap[msg.sender] = true;
+    function registerAsAdmin(address _address) public onlyAdmin{
+        isAdminMap[_address] = true;
     }
 
     //Functions for admin to approve or reject quiz requests

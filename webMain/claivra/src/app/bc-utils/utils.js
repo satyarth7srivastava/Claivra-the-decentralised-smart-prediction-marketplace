@@ -4,7 +4,7 @@ import artifacts from "../../contracts/MPC.json";
 import { toast } from "react-toastify";
 
 
-const contractAdress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const contractAdress = "0x78fCD79DCE9775995efFdC2bB7Bc340d02eB7C5d";
 
 let myContract = null;
 
